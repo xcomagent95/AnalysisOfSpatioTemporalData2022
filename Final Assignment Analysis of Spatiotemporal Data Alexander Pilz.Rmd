@@ -1,0 +1,119 @@
+---
+title: "Final Assignment Analysis of Spatiotemporal Data"
+subtitle: "Spatial point pattern analysis of wind turbines in the precincts of NRW"
+author: "Alexander Pilz"
+date: "2023-01-30"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```{r importLibraries, include=FALSE}
+#import libraries
+library(sf) 
+library(raster)
+library(spatstat)
+```
+```{r ingestDatasets, include=FALSE}
+#import precincts
+precincts <- st_read("data/dvg2_EPSG25832_Shape/dvg2rbz_nw.shp")
+#union precincts
+precinctsUnion <- st_union(precincts)
+#import wind turbines
+windTurbines <- st_read("data/OpenEE-Windenergie_EPSG25832_Shape/Windbetrieb_Standorte.shp")
+#import potential yields
+potentialYields <- raster("data/Energieleistungsdichte-100m_EPSG25832_TIFF/en_100m_klas.tif")
+```
+
+## Datasets
+```{r summarizePrecincts, include=TRUE, fig.width=15, fig.height=12}
+summary(precincts)
+plot(st_geometry(precincts))
+precinctsCentroids = st_coordinates(st_centroid(st_geometry(precincts)))
+text(precinctsCentroids, labels = precincts$GN, col = "blue")
+title(main = "Precincts of NRW")
+```
+
+```{r subsetWindTurbines, include=FALSE}
+#create subsets
+windTurbinesArnsberg <- st_intersection(windTurbines, precincts[precincts$GN == "Arnsberg",])
+windTurbinesDetmold <- st_intersection(windTurbines, precincts[precincts$GN == "Detmold",])
+windTurbinesKöln <- st_intersection(windTurbines, precincts[precincts$GN == "Köln",])
+windTurbinesDüsseldorf <- st_intersection(windTurbines, precincts[precincts$GN == "Düsseldorf",])
+windTurbinesMünster <- st_intersection(windTurbines, precincts[precincts$GN == "Münster",])
+
+#create planar point patterns
+pppWindTurbinesArnsberg <- as.ppp(c(st_geometry(precincts[precincts$GN == "Arnsberg",]), st_geometry(windTurbinesArnsberg)))
+pppWindTurbinesDetmold <- as.ppp(c(st_geometry(precincts[precincts$GN == "Detmold",]), st_geometry(windTurbinesDetmold)))
+pppWindTurbinesKöln <- as.ppp(c(st_geometry(precincts[precincts$GN == "Köln",]), st_geometry(windTurbinesKöln)))
+pppWindTurbinesDüsseldorf <- as.ppp(c(st_geometry(precincts[precincts$GN == "Düsseldorf",]), st_geometry(windTurbinesDüsseldorf)))
+pppWindTurbinesMünster <- as.ppp(c(st_geometry(precincts[precincts$GN == "Münster",]), st_geometry(windTurbinesMünster)))
+
+#compute densities
+densityArnsberg <- density(pppWindTurbinesArnsberg, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityDetmold <- density(pppWindTurbinesDetmold, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityKöln <- density(pppWindTurbinesKöln, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityDüsseldorf <- density(pppWindTurbinesDüsseldorf, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityMünster <- density(pppWindTurbinesMünster, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+```
+
+```{r summarizeWindTurbines, include=TRUE}
+summary(windTurbines)
+#plot(precinctsUnion)
+#plot(st_geometry(windTurbines), pch = 3, col = 'red', add = TRUE)
+#title(main = "Wind turbines of NRW")
+```
+```{r plotWindTurbines, include=TRUE, fig.width=10, fig.height=8}
+par(mfrow=c(1,2))
+plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), main = "Wind turbines - Arnsberg")
+plot(st_geometry(windTurbinesArnsberg), pch = 3, col = 'red', add = TRUE)
+
+plot(densityArnsberg, main = "Wind turbine density - Arnsberg")
+plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), add=TRUE)
+
+par(mfrow=c(1,2))
+plot(st_geometry(precincts[precincts$GN == "Detmold",]), main = "Wind turbines - Detmold")
+plot(st_geometry(windTurbinesDetmold), pch = 3, col = 'red', add = TRUE)
+
+plot(densityDetmold, main = "Wind turbine density - Detmold")
+plot(st_geometry(precincts[precincts$GN == "Detmold",]), add=TRUE)
+
+par(mfrow=c(1,2))
+plot(st_geometry(precincts[precincts$GN == "Köln",]), main = "Wind turbines - Köln")
+plot(st_geometry(windTurbinesKöln), pch = 3, col = 'red', add = TRUE)
+
+plot(densityKöln, main = "Wind turbine density - Köln")
+plot(st_geometry(precincts[precincts$GN == "Köln",]), add=TRUE)
+
+par(mfrow=c(1,2))
+plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), main = "Wind turbines - Düsseldorf")
+plot(st_geometry(windTurbinesDüsseldorf), pch = 3, col = 'red', add = TRUE)
+
+plot(densityDüsseldorf, main = "Wind turbine density - Düsseldorf")
+plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), add=TRUE)
+
+par(mfrow=c(1,2))
+plot(st_geometry(precincts[precincts$GN == "Münster",]), main = "Wind turbines of Münster precinct")
+plot(st_geometry(windTurbinesMünster), pch = 3, col = 'red', add = TRUE)
+
+plot(densityMünster, main = "Wind turbine density of Münster precinct")
+plot(st_geometry(precincts[precincts$GN == "Münster",]), add=TRUE)
+```
+
+## Analysis
+
+### Part I - Preliminary testing
+### Part II - Influence of potenial energy yields
+### Part III - Differences between precincts
+
+## Results
+
+## Sources
