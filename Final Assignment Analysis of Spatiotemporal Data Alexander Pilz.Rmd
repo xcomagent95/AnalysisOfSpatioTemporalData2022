@@ -6,101 +6,95 @@ date: "2023-01-30"
 output: html_document
 ---
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
 
 ## Introduction
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-
-```{r importLibraries, include=FALSE}
+```{r importLibraries, echo=TRUE}
 #import libraries
 library(sf) 
 library(raster)
 library(spatstat)
 ```
-```{r ingestDatasets, include=FALSE}
+```{r ingestDatasets, include=TRUE}
+
+```
+
+## Datasets
+```{r summarizePrecincts, echo=TRUE, fig.height=8, fig.width=8}
 #import precincts
 precincts <- st_read("data/dvg2_EPSG25832_Shape/dvg2rbz_nw.shp")
 #union precincts
 precinctsUnion <- st_union(precincts)
-#import wind turbines
-windTurbines <- st_read("data/OpenEE-Windenergie_EPSG25832_Shape/Windbetrieb_Standorte.shp")
-#import potential yields
-potentialYields <- raster("data/Energieleistungsdichte-100m_EPSG25832_TIFF/en_100m_klas.tif")
-```
-
-## Datasets
-```{r summarizePrecincts, include=TRUE, fig.width=15, fig.height=12}
 summary(precincts)
+```
+```{r plotPrecincts, echo=FALSE, fig.height=8, fig.width=8}
+#plot precincts of NRW
 plot(st_geometry(precincts))
 precinctsCentroids = st_coordinates(st_centroid(st_geometry(precincts)))
 text(precinctsCentroids, labels = precincts$GN, col = "blue")
 title(main = "Precincts of NRW")
 ```
+```{r summarizeTurbines, echo=TRUE}
+#import wind turbines
+windTurbines <- st_read("data/OpenEE-Windenergie_EPSG25832_Shape/Windbetrieb_Standorte.shp")
+summary(windTurbines)
+```
+```{r summarizeYields, echo=TRUE}
+#import potential yields
+potentialYields <- raster("data/Energieleistungsdichte-100m_EPSG25832_TIFF/en_100m_klas.tif")
+summary(potentialYields)
+```
 
-```{r subsetWindTurbines, include=FALSE}
-#create subsets
+```{r subsetWindTurbines, echo=TRUE}
+#create subset of wind turbines for each precinct
 windTurbinesArnsberg <- st_intersection(windTurbines, precincts[precincts$GN == "Arnsberg",])
 windTurbinesDetmold <- st_intersection(windTurbines, precincts[precincts$GN == "Detmold",])
 windTurbinesKöln <- st_intersection(windTurbines, precincts[precincts$GN == "Köln",])
 windTurbinesDüsseldorf <- st_intersection(windTurbines, precincts[precincts$GN == "Düsseldorf",])
 windTurbinesMünster <- st_intersection(windTurbines, precincts[precincts$GN == "Münster",])
 
-#create planar point patterns
-pppWindTurbinesArnsberg <- as.ppp(c(st_geometry(precincts[precincts$GN == "Arnsberg",]), st_geometry(windTurbinesArnsberg)))
-pppWindTurbinesDetmold <- as.ppp(c(st_geometry(precincts[precincts$GN == "Detmold",]), st_geometry(windTurbinesDetmold)))
-pppWindTurbinesKöln <- as.ppp(c(st_geometry(precincts[precincts$GN == "Köln",]), st_geometry(windTurbinesKöln)))
-pppWindTurbinesDüsseldorf <- as.ppp(c(st_geometry(precincts[precincts$GN == "Düsseldorf",]), st_geometry(windTurbinesDüsseldorf)))
-pppWindTurbinesMünster <- as.ppp(c(st_geometry(precincts[precincts$GN == "Münster",]), st_geometry(windTurbinesMünster)))
+#create planar point patterns from wind turbine subsets
+pppArnsberg <- as.ppp(c(st_geometry(precincts[precincts$GN == "Arnsberg",]), st_geometry(windTurbinesArnsberg)))
+pppDetmold <- as.ppp(c(st_geometry(precincts[precincts$GN == "Detmold",]), st_geometry(windTurbinesDetmold)))
+pppKöln <- as.ppp(c(st_geometry(precincts[precincts$GN == "Köln",]), st_geometry(windTurbinesKöln)))
+pppDüsseldorf <- as.ppp(c(st_geometry(precincts[precincts$GN == "Düsseldorf",]), st_geometry(windTurbinesDüsseldorf)))
+pppMünster <- as.ppp(c(st_geometry(precincts[precincts$GN == "Münster",]), st_geometry(windTurbinesMünster)))
 
-#compute densities
-densityArnsberg <- density(pppWindTurbinesArnsberg, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
-densityDetmold <- density(pppWindTurbinesDetmold, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
-densityKöln <- density(pppWindTurbinesKöln, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
-densityDüsseldorf <- density(pppWindTurbinesDüsseldorf, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
-densityMünster <- density(pppWindTurbinesMünster, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+#compute densities of wind turbines for each precinct
+densityArnsberg <- density(pppArnsberg, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityDetmold <- density(pppDetmold, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityKöln <- density(pppKöln, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityDüsseldorf <- density(pppDüsseldorf, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
+densityMünster <- density(pppMünster, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
 ```
 
-```{r summarizeWindTurbines, include=TRUE}
-summary(windTurbines)
-#plot(precinctsUnion)
-#plot(st_geometry(windTurbines), pch = 3, col = 'red', add = TRUE)
-#title(main = "Wind turbines of NRW")
-```
-```{r plotWindTurbines, include=TRUE, fig.width=10, fig.height=8}
-par(mfrow=c(1,2))
+```{r plotWindTurbines, echo=FALSE, fig.height=8, fig.width=8, message=FALSE}
+
 plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), main = "Wind turbines - Arnsberg")
 plot(st_geometry(windTurbinesArnsberg), pch = 3, col = 'red', add = TRUE)
 
 plot(densityArnsberg, main = "Wind turbine density - Arnsberg")
 plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), add=TRUE)
 
-par(mfrow=c(1,2))
 plot(st_geometry(precincts[precincts$GN == "Detmold",]), main = "Wind turbines - Detmold")
 plot(st_geometry(windTurbinesDetmold), pch = 3, col = 'red', add = TRUE)
 
 plot(densityDetmold, main = "Wind turbine density - Detmold")
 plot(st_geometry(precincts[precincts$GN == "Detmold",]), add=TRUE)
 
-par(mfrow=c(1,2))
 plot(st_geometry(precincts[precincts$GN == "Köln",]), main = "Wind turbines - Köln")
 plot(st_geometry(windTurbinesKöln), pch = 3, col = 'red', add = TRUE)
 
 plot(densityKöln, main = "Wind turbine density - Köln")
 plot(st_geometry(precincts[precincts$GN == "Köln",]), add=TRUE)
 
-par(mfrow=c(1,2))
 plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), main = "Wind turbines - Düsseldorf")
 plot(st_geometry(windTurbinesDüsseldorf), pch = 3, col = 'red', add = TRUE)
 
 plot(densityDüsseldorf, main = "Wind turbine density - Düsseldorf")
 plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), add=TRUE)
 
-par(mfrow=c(1,2))
 plot(st_geometry(precincts[precincts$GN == "Münster",]), main = "Wind turbines of Münster precinct")
 plot(st_geometry(windTurbinesMünster), pch = 3, col = 'red', add = TRUE)
 
@@ -109,11 +103,59 @@ plot(st_geometry(precincts[precincts$GN == "Münster",]), add=TRUE)
 ```
 
 ## Analysis
-
 ### Part I - Preliminary testing
+```{r gFunction, echo=TRUE, message=FALSE, warning=FALSE}
+#compute G-, F- and J-function for precinct Arnsberg
+gEnvArnsberg <- envelope(pppArnsberg, fun = Gest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+fEnvArnsberg <- envelope(pppArnsberg, fun = Fest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+jEnvArnsberg <- envelope(pppArnsberg, fun = Jest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+
+#compute G-, F- and J-function for precinct Detmold
+gEnvDetmold <- envelope(pppDetmold, fun = Gest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+fEnvDetmold <- envelope(pppDetmold, fun = Fest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+jEnvDetmold <- envelope(pppDetmold, fun = Jest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+
+#compute G-, F- and J-function for precinct Arnsberg
+gEnvKöln <- envelope(pppKöln, fun = Gest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+fEnvKöln <- envelope(pppKöln, fun = Fest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+jEnvKöln <- envelope(pppKöln, fun = Jest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+
+#compute G-, F- and J-function for precinct Arnsberg
+gEnvDüsseldorf <- envelope(pppDüsseldorf, fun = Gest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+fEnvDüsseldorf <- envelope(pppDüsseldorf, fun = Fest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+jEnvDüsseldorf <- envelope(pppDüsseldorf, fun = Jest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+
+#compute G-, F- and J-function for precinct Arnsberg
+gEnvMünster <- envelope(pppMünster, fun = Gest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+fEnvMünster <- envelope(pppMünster, fun = Fest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+jEnvMünster <- envelope(pppMünster, fun = Jest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
+```
+```{r gFunctionPlot, echo=FALSE, fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
+#plot G-function for precincts
+plot(gEnvArnsberg, main = "G-function - Arnsberg")
+plot(gEnvDetmold, main = "G-function - Detmold")
+plot(gEnvKöln, main = "G-function - Köln")
+plot(gEnvDüsseldorf, main = "G-function - Düsseldorf")
+plot(gEnvMünster, main = "G-function - Münster")
+```
+```{r fFunctionPlot, echo=FALSE, fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
+#plot F-function for precincts
+plot(fEnvArnsberg, main = "F-function - Arnsberg")
+plot(fEnvDetmold, main = "F-function - Detmold")
+plot(fEnvKöln, main = "F-function - Köln")
+plot(fEnvDüsseldorf, main = "F-function - Düsseldorf")
+plot(fEnvMünster, main = "F-function - Münster")
+```
+```{r jFunctionPlot, echo=FALSE, fig.height=8, fig.width=8, message=FALSE, warning=FALSE}
+#plot J-function for precincts
+plot(jEnvArnsberg, main = "J-function - Arnsberg")
+plot(jEnvDetmold, main = "J-function - Detmold")
+plot(jEnvKöln, main = "J-function - Köln")
+plot(jEnvDüsseldorf, main = "J-function - Düsseldorf")
+plot(jEnvMünster, main = "J-function - Münster")
+```
+
 ### Part II - Influence of potenial energy yields
 ### Part III - Differences between precincts
-
 ## Results
-
 ## Sources
