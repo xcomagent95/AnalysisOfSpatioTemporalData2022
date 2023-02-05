@@ -1,0 +1,32 @@
+```{r adjustedKernelDensity, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+rhoArnsberg <- rhohat(pppArnsberg, as.im.RasterLayer(potentialYieldsArnsbergMasked),  method="ratio")
+rohArnsbergPred <- predict(rhoArnsberg)
+
+rhoDetmold <- rhohat(pppDetmold, as.im.RasterLayer(potentialYieldsDetmoldMasked),  method="ratio")
+rohDetmoldPred <- predict(rhoDetmold)
+
+rhoKöln <- rhohat(pppKöln, as.im.RasterLayer(potentialYieldsKölnMasked),  method="ratio")
+rohKölnPred <- predict(rhoKöln)
+
+rhoDüsseldorf <- rhohat(pppDüsseldorf, as.im.RasterLayer(potentialYieldsDüsseldorfMasked),  method="ratio")
+rohDüsseldorfPred <- predict(rhoDüsseldorf)
+
+rhoMünster <- rhohat(pppMünster, as.im.RasterLayer(potentialYieldsMünsterMasked),  method="ratio")
+rohMünsterPred <- predict(rhoMünster)
+```
+```{r plotAdjustedKernelDensity, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+plot(rhoArnsberg, las=1, main=NULL)
+plot(rohArnsbergPred, las=1, main=NULL)
+
+plot(rhoDetmold, las=1, main=NULL)
+plot(rohDetmoldPred, las=1, main=NULL)
+
+plot(rhoKöln, las=1, main=NULL)
+plot(rohKölnPred, las=1, main=NULL)
+
+plot(rhoDüsseldorf, las=1, main=NULL)
+plot(rohDüsseldorfPred, las=1, main=NULL)
+
+plot(rhoMünster, las=1, main=NULL)
+plot(rohMünsterPred, las=1, main=NULL)
+```

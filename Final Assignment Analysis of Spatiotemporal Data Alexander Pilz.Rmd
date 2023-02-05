@@ -10,18 +10,16 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
 
 ## Introduction
+
+## Datasets
 ```{r importLibraries, echo=TRUE}
 #import libraries
 library(sf) 
 library(raster)
 library(spatstat)
 library(plyr)
+library(maptools)
 ```
-```{r ingestDatasets, include=TRUE}
-
-```
-
-## Datasets
 ```{r summarizePrecincts, echo=TRUE, fig.height=8, fig.width=8}
 #import precincts
 precincts <- st_read("data/dvg2_EPSG25832_Shape/dvg2rbz_nw.shp")
@@ -44,6 +42,7 @@ summary(windTurbines)
 #import potential yields
 potentialYields <- raster("data/Energieleistungsdichte-100m_EPSG25832_TIFF/en_100m_klas.tif")
 summary(potentialYields)
+yields <- c("1", "2", "3", "4", "5", "6", "7")
 plot(potentialYields, sub = "Fig. ", main = "Potential yields of NRW")
 ```
 
@@ -95,35 +94,35 @@ par(mar=c(1, 1, 1, 1))
 plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), main = "Wind turbines - Arnsberg", sub = "Fig. ")
 plot(st_geometry(windTurbinesArnsberg), pch = 3, col = 'red', add = TRUE)
 
-plot(densityArnsberg, main = "Wind turbine density - Arnsberg", sub = "Fig. ")
+plot(densityArnsberg, main = "Wind turbine density - Arnsberg", sub = "Fig. ", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Detmold",]), main = "Wind turbines - Detmold", sub = "Fig. ")
 plot(st_geometry(windTurbinesDetmold), pch = 3, col = 'red', add = TRUE)
 
-plot(densityDetmold, main = "Wind turbine density - Detmold", sub = "Fig. ")
+plot(densityDetmold, main = "Wind turbine density - Detmold", sub = "Fig. ", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Detmold",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Köln",]), main = "Wind turbines - Köln", sub = "Fig. ")
 plot(st_geometry(windTurbinesKöln), pch = 3, col = 'red', add = TRUE)
 
-plot(densityKöln, main = "Wind turbine density - Köln", sub = "Fig. ")
+plot(densityKöln, main = "Wind turbine density - Köln", sub = "Fig. ", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Köln",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), main = "Wind turbines - Düsseldorf", sub = "Fig. ")
 plot(st_geometry(windTurbinesDüsseldorf), pch = 3, col = 'red', add = TRUE)
 
-plot(densityDüsseldorf, main = "Wind turbine density - Düsseldorf", sub = "Fig. ")
+plot(densityDüsseldorf, main = "Wind turbine density - Düsseldorf", sub = "Fig. ", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Münster",]), main = "Wind turbines of Münster precinct", sub = "Fig. ")
 plot(st_geometry(windTurbinesMünster), pch = 3, col = 'red', add = TRUE)
 
-plot(densityMünster, main = "Wind turbine density of Münster precinct", sub = "Fig. ")
+plot(densityMünster, main = "Wind turbine density of Münster precinct", sub = "Fig. ", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Münster",]), add=TRUE)
 ```
 
-## Analysis
+## Methods
 ### Part I - Preliminary testing
 ```{r gFunction, echo=FALSE, message=FALSE, warning=FALSE}
 #compute G-, F- and J-function for precinct Arnsberg
@@ -176,7 +175,7 @@ plot(jEnvDüsseldorf, main = "J-function - Düsseldorf", sub = "Fig. ", ylim=c(0
 plot(jEnvMünster, main = "J-function - Münster", sub = "Fig. ", ylim=c(0,12))
 ```
 
-### Part II - Influence of potenial energy yields
+### Part II - Local intensity
 ```{r cropYields, echo=FALSE, fig.show='hold', out.width='50%', message=FALSE, warning=FALSE}
 potentialYieldsArnsbergCropped <- crop(potentialYields, precincts[precincts$GN == "Arnsberg",])
 potentialYieldsArnsbergMasked <- mask(potentialYieldsArnsbergCropped, precincts[precincts$GN == "Arnsberg",])
@@ -205,103 +204,100 @@ plot(potentialYieldsDüsseldorfMasked, sub = "Fig. ", main = "Potential yields -
 plot(potentialYieldsMünsterMasked, sub = "Fig. ", main = "Potential yields - Münster")
 
 ```
-```{r extractYields, echo=TRUE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
-#import precincts
-yields <- c("1", "2", "3", "4", "5", "6", "7")
+```{r localDensity, echo=TRUE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+breaks <- c(1,2,3,4,5,6,7)
 
-#extract yields
-turbinesWithYieldsArnsberg <- as.data.frame(extract(potentialYieldsArnsbergMasked, windTurbinesArnsberg))
-colnames(turbinesWithYieldsArnsberg) <- c("DN")
+potentialYieldsArnsbergClassified <- cut(potentialYieldsArnsbergMasked, breaks=breaks)
+tessellationArnsberg <- tess(image=potentialYieldsArnsbergClassified)  
+localDensityArnsberg <- quadratcount(pppArnsberg, tess=tessellationArnsberg)  
+localDensityArnsberg.dens <- intensity(localDensityArnsberg) 
 
-turbinesWithYieldsDetmold <- as.data.frame(extract(potentialYieldsDetmoldMasked, windTurbinesDetmold))
-colnames(turbinesWithYieldsDetmold) <- c("DN")
 
-turbinesWithYieldsKöln <- as.data.frame(extract(potentialYieldsKölnMasked, windTurbinesKöln))
-colnames(turbinesWithYieldsKöln) <- c("DN")
+potentialYieldsDetmoldClassified <- cut(potentialYieldsDetmoldMasked, breaks=breaks)
+tessellationDetmold <- tess(image=potentialYieldsDetmoldClassified)  
+localDensityDetmold <- quadratcount(pppDetmold, tess=tessellationDetmold)  
+localDensityDetmold.dens <- intensity(localDensityDetmold) 
 
-turbinesWithYieldsDüsseldorf <- as.data.frame(extract(potentialYieldsDüsseldorfMasked, windTurbinesDüsseldorf))
-colnames(turbinesWithYieldsDüsseldorf) <- c("DN")
 
-turbinesWithYieldsMünster <- as.data.frame(extract(potentialYieldsMünsterMasked, windTurbinesMünster))
-colnames(turbinesWithYieldsMünster) <- c("DN")
+potentialYieldsKölnClassified <- cut(potentialYieldsKölnMasked, breaks=breaks)
+tessellationKöln <- tess(image=potentialYieldsKölnClassified)  
+localDensityKöln <- quadratcount(pppKöln, tess=tessellationKöln) 
+localDensityKöln.dens <- intensity(localDensityKöln) 
 
-#compute turbine count per yield
-turbinesWithYieldsArnsbergFreq <- count(turbinesWithYieldsArnsberg) 
-colnames(turbinesWithYieldsArnsbergFreq) <- c("potentialYield", "turbineCount")
+potentialYieldsDüsseldorfClassified <- cut(potentialYieldsDüsseldorfMasked, breaks=breaks)
+tessellationDüsseldorf <- tess(image=potentialYieldsDüsseldorfClassified)  
+localDensityDüsseldorf <- quadratcount(pppDüsseldorf, tess=tessellationDüsseldorf)  
+localDensityDüsseldorf.dens <- intensity(localDensityDüsseldorf) 
 
-turbinesWithYieldsDetmoldFreq <- count(turbinesWithYieldsDetmold) 
-colnames(turbinesWithYieldsDetmoldFreq) <- c("potentialYield", "turbineCount")
 
-turbinesWithYieldsKölnFreq <- count(turbinesWithYieldsKöln) 
-colnames(turbinesWithYieldsKölnFreq) <- c("potentialYield", "turbineCount")
+potentialYieldsMünsterClassified <- cut(potentialYieldsMünsterMasked, breaks=breaks)
+tessellationMünster <- tess(image=potentialYieldsMünsterClassified)  
+localDensityMünster <- quadratcount(pppMünster, tess=tessellationArnsberg)  
+localDensityMünster.dens <- intensity(localDensityMünster) 
 
-turbinesWithYieldsDüsseldorfFreq <- count(turbinesWithYieldsDüsseldorf) 
-colnames(turbinesWithYieldsDüsseldorfFreq) <- c("potentialYield", "turbineCount")
-
-turbinesWithYieldsMünsterFreq <- count(turbinesWithYieldsMünster) 
-colnames(turbinesWithYieldsMünsterFreq) <- c("potentialYield", "turbineCount")
-
-#compute pixel counts per yield
-potentialYieldsArnsbergCounts <-  as.data.frame(freq(potentialYieldsArnsbergMasked))
-colnames(potentialYieldsArnsbergCounts) <- c("potentialYield", "pixelCount")
-
-potentialYieldsDetmoldCounts <-  as.data.frame(freq(potentialYieldsDetmoldMasked))
-colnames(potentialYieldsDetmoldCounts) <- c("potentialYield", "pixelCount")
-
-potentialYieldsKölnCounts <-  as.data.frame(freq(potentialYieldsKölnMasked))
-colnames(potentialYieldsKölnCounts) <- c("potentialYield", "pixelCount")
-
-potentialYieldsDüsseldorfCounts <-  as.data.frame(freq(potentialYieldsDüsseldorfMasked))
-colnames(potentialYieldsDüsseldorfCounts) <- c("potentialYield", "pixelCount")
-
-potentialYieldsMünsterCounts <-  as.data.frame(freq(potentialYieldsMünsterMasked))
-colnames(potentialYieldsMünsterCounts) <- c("potentialYield", "pixelCount")
-
-#compute area per yield
-potentialYieldsArnsbergCounts$area = (potentialYieldsArnsbergCounts$pixelCount*10000)/1000000
-potentialYieldsDetmoldCounts$area = (potentialYieldsDetmoldCounts$pixelCount*10000)/1000000
-potentialYieldsKölnCounts$area = (potentialYieldsKölnCounts$pixelCount*10000)/1000000
-potentialYieldsDüsseldorfCounts$area = (potentialYieldsDüsseldorfCounts$pixelCount*10000)/1000000
-potentialYieldsMünsterCounts$area = (potentialYieldsMünsterCounts$pixelCount*10000)/1000000
-
-#merge turbine counts per yield and pixel counts per yield
-potentialYieldsArnsbergCounts <- merge(turbinesWithYieldsArnsbergFreq, potentialYieldsArnsbergCounts, 
-                                       by.x = "potentialYield", by.y = "potentialYield")
-
-potentialYieldsDetmoldCounts <- merge(turbinesWithYieldsDetmoldFreq, potentialYieldsDetmoldCounts, 
-                                      by.x = "potentialYield", by.y = "potentialYield")
-
-potentialYieldsKölnCounts <- merge(turbinesWithYieldsKölnFreq, potentialYieldsKölnCounts, 
-                                      by.x = "potentialYield", by.y = "potentialYield")
-
-potentialYieldsDüsseldorfCounts <- merge(turbinesWithYieldsDüsseldorfFreq, potentialYieldsDüsseldorfCounts, 
-                                      by.x = "potentialYield", by.y = "potentialYield")
-
-potentialYieldsMünsterCounts <- merge(turbinesWithYieldsMünsterFreq, potentialYieldsMünsterCounts, 
-                                      by.x = "potentialYield", by.y = "potentialYield")
-
-potentialYieldsArnsbergCounts$density = potentialYieldsArnsbergCounts$turbineCount/potentialYieldsArnsbergCounts$area
-potentialYieldsDetmoldCounts$density = potentialYieldsDetmoldCounts$turbineCount/potentialYieldsDetmoldCounts$area
-potentialYieldsKölnCounts$density = potentialYieldsKölnCounts$turbineCount/potentialYieldsKölnCounts$area
-potentialYieldsDüsseldorfCounts$density = potentialYieldsDüsseldorfCounts$turbineCount/potentialYieldsDüsseldorfCounts$area
-potentialYieldsMünsterCounts$density = potentialYieldsMünsterCounts$turbineCount/potentialYieldsMünsterCounts$area
 ```
-```{r localDensities, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
-#possible yields 
-yields <- c("1", "2", "3", "4", "5", "6", "7")
+```{r plotLocalDensities, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+barplot(localDensityArnsberg.dens, main = "Local wind turbine densities - Arnsberg", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
 
-#plot local densities
-barplot(potentialYieldsArnsbergCounts$density, main = "Local wind turbine densities - Arnsberg", xlab = "Potential yield", ylab = "Wind turbine density", names.arg = potentialYieldsArnsbergCounts$potentialYield, sub = "Fig.")
+barplot(localDensityDetmold.dens, main = "Local wind turbine densities - Detmold", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
 
-barplot(potentialYieldsDetmoldCounts$density, main = "Local wind turbine densities - Detmold", xlab = "Potential yield", ylab = "Wind turbine density", names.arg = potentialYieldsDetmoldCounts$potentialYield, sub = "Fig.")
+barplot(localDensityKöln.dens, main = "Local wind turbine densities - Köln", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
 
-barplot(potentialYieldsKölnCounts$density, main = "Local wind turbine densities - Köln", xlab = "Potential yield", ylab = "Wind turbine density", names.arg = potentialYieldsKölnCounts$potentialYield, sub = "Fig.")
+barplot(localDensityDüsseldorf.dens, main = "Local wind turbine densities - Düsseldorf", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
 
-barplot(potentialYieldsDüsseldorfCounts$density, main = "Local wind turbine densities - Düsseldorf", xlab = "Potential yield", ylab = "Wind turbine density", names.arg = potentialYieldsDüsseldorfCounts$potentialYield, sub = "Fig.")
-
-barplot(potentialYieldsMünsterCounts$density, main = "Local wind turbine densities - Münster", xlab = "Potential yield", ylab = "Wind turbine density", names.arg = potentialYieldsMünsterCounts$potentialYield, sub = "Fig.")
+barplot(localDensityMünster.dens, main = "Local wind turbine densities - Münster", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
 ```
+### Part III - Intensity as function of covariate
+```{r intensityFunction, echo=TRUE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+covariantArnsberg <- as.im.RasterLayer(potentialYieldsArnsbergMasked)
+ppmArnsbergCov <- ppm(pppArnsberg ~ covariantArnsberg)
+ppmArnsberg <- ppm(pppArnsberg ~ 1)
+ppmArnsbergPred <- predict(ppmArnsbergCov)
 
-### Part III - Differences between precincts
+covariantDetmold <- as.im.RasterLayer(potentialYieldsDetmoldMasked)
+ppmDetmoldCov <- ppm(pppDetmold ~ covariantDetmold)
+ppmDetmold <- ppm(pppDetmold ~ 1)
+ppmDetmoldPred <- predict(ppmDetmoldCov)
+
+covariantKöln <- as.im.RasterLayer(potentialYieldsKölnMasked)
+ppmKölnCov <- ppm(pppKöln ~ covariantKöln)
+ppmKöln <- ppm(pppKöln ~ 1)
+ppmKölnPred <- predict(ppmKölnCov)
+
+covariantDüsseldorf <- as.im.RasterLayer(potentialYieldsDüsseldorfMasked)
+ppmDüsseldorfCov <- ppm(pppDüsseldorf ~ covariantDüsseldorf)
+ppmDüsseldorf <- ppm(pppDüsseldorf ~ 1)
+ppmDüsseldorfPred <- predict(ppmDüsseldorfCov)
+
+covariantMünster <- as.im.RasterLayer(potentialYieldsMünsterMasked)
+ppmMünsterCov <- ppm(pppMünster ~ covariantMünster)
+ppmMünster <- ppm(pppMünster ~ 1)
+ppmMünsterPred <- predict(ppmMünsterCov)
+```
+```{r plotIntensityFunction, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+plot(effectfun(ppmArnsbergCov, "covariantArnsberg", se.fit=TRUE), main=NULL, las=1)
+plot(ppmArnsbergPred, box=FALSE)
+
+plot(effectfun(ppmDetmoldCov, "covariantDetmold", se.fit=TRUE), main=NULL, las=1)
+plot(ppmDetmoldPred, box=FALSE)
+
+plot(effectfun(ppmKölnCov, "covariantKöln", se.fit=TRUE), main=NULL, las=1)
+plot(ppmKölnPred, box=FALSE)
+
+plot(effectfun(ppmDüsseldorfCov, "covariantDüsseldorf", se.fit=TRUE), main=NULL, las=1)
+plot(ppmDüsseldorfPred, box=FALSE)
+
+plot(effectfun(ppmMünsterCov, "covariantMünster", se.fit=TRUE), main=NULL, las=1)
+plot(ppmMünsterPred, box=FALSE)
+```
+```{r testFunction, echo=TRUE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+anova(ppmArnsberg, ppmArnsbergCov, test="LRT")
+anova(ppmDetmold, ppmDetmoldCov, test="LRT")
+anova(ppmKöln, ppmKölnCov, test="LRT")
+anova(ppmDüsseldorf, ppmDüsseldorfCov, test="LRT")
+anova(ppmMünster, ppmMünsterCov, test="LRT")
+```
 ## Results
+## Discussion 
 ## Sources
+
