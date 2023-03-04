@@ -10,8 +10,17 @@ knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning=FALSE)
 ```
 
 ## Introduction
+In July 2022, the German government formulated the "Act to Increase and Accelerate the Expansion of Onshore Wind Energy Facilities," which underscores the goal of increasing the use of renewable energy sources
+in Germany. The law stipulates that 1.8% of the area of the federal state of North Rhine-Westphalia must be used for power generation from wind energy. The power yields of such facilities are depended on a multitude of factors. 
+One would argue that wind turbines should build where their potential energy yields are the highest. 
+Instead of concerning itself with future planning practices the following point pattern analysis conducted during the seminar Analysis of Spatiotemporal Data in 2022/23 tries to explain the point pattern resulting from existing wind turbines in North Rhine-Westphalia in relation to the environmental Variable of specific energy power density. 
 
-## Datasets
+The planning and execution of construction efforts is the task of multiple administrative units. The federal state (Land NRW) and precincts (Bezirke) indentify and disclose areas which are to be used for the power generation by means of wind energy in the fedearl state development plan (Landesentwicklungsplan) and the derivative regional plans (Regionalpläne). The counties (Kreise) are only responsible for the planning and subsequent construction of the actual wind parks. Thus the point pattern analysis is conducted on precinct level.
+
+## Data
+The datasets employed during this point pattern analysis are all available openly and free of charge at the GEOportal.NRW. The employed coordinate reference system of all datasets is ETRS89 / UTM zone 32N commonly used for official and  cadastral data in North Rhine-Westphalia.  The analysis itself was carried out using the programming language R and the packages sf, raster, spatstat, plyr, maptools, ggpubr. 
+
+
 ```{r importLibraries, echo=TRUE}
 #import libraries
 library(sf) 
@@ -19,32 +28,60 @@ library(raster)
 library(spatstat)
 library(plyr)
 library(maptools)
+library(ggpubr)
 ```
+
+The point pattern to be examined represents the existing wind turbines in North Rhine-Westphalia. The Shapefile contains 3797 point features with 12 attribute fields which contain information about the wind turbine like the diameter of its rotor, the year of its commissioning and the administrative unit in which they are situated.  
+
+```{r summarizeTurbines, echo=TRUE}
+#import wind turbines
+windTurbines <- st_read("data/OpenEE-Windenergie_EPSG25832_Shape/Windbetrieb_Standorte.shp")
+```
+
+The dataset containing polygonal features of the precincts of the federal state of North Rhine-Westphalia lists five precincts namely Arnsberg, Detmold, Köln, Düsseldorf and Münster.
+
 ```{r summarizePrecincts, echo=TRUE, fig.height=8, fig.width=8}
 #import precincts
 precincts <- st_read("data/dvg2_EPSG25832_Shape/dvg2rbz_nw.shp")
 #union precincts
 precinctsUnion <- st_union(precincts)
-summary(precincts)
 ```
 ```{r plotPrecincts, echo=FALSE, fig.height=8, fig.width=8}
 #plot precincts of NRW
-plot(st_geometry(precincts), main = "Precincts of NRW", sub = "Fig. ")
+plot(st_geometry(precincts), main = "Figure x - Precincts of NRW")
 precinctsCentroids = st_coordinates(st_centroid(st_geometry(precincts)))
 text(precinctsCentroids, labels = precincts$GN, col = "blue")
 ```
-```{r summarizeTurbines, echo=TRUE}
-#import wind turbines
-windTurbines <- st_read("data/OpenEE-Windenergie_EPSG25832_Shape/Windbetrieb_Standorte.shp")
-summary(windTurbines)
-```
+
+The environmental variable to be used for this point patter analysis, namely the specific energy power density, was sourced as a raster file. The raster has a resolution of 100x100 meters and covers all of North Rhine-Westphalia. The data is available in different height levels. Here the data corresponding to a height of 100 meters is used. The specific energy power density is a measure of the power of the wind flowing through an area. It indicates how much power (in watts) is converted per square meter of rotor area. The specific energy power density can be seen as an indicator for the suitability of a site for wind energy use.
+
 ```{r summarizeYields, echo=TRUE, fig.height=8, fig.width=8}
 #import potential yields
 potentialYields <- raster("data/Energieleistungsdichte-100m_EPSG25832_TIFF/en_100m_klas.tif")
-summary(potentialYields)
 yields <- c("1", "2", "3", "4", "5", "6", "7")
-plot(potentialYields, sub = "Fig. ", main = "Potential yields of NRW")
 ```
+```{r plotYieldsI, echo=FALSE, fig.height=8, fig.width=8}
+plot(potentialYields, main = "Figure x - specific energy power density of NRW")
+```
+
+## Methods
+### Part I - Preliminary analysis and testing
+In order to get an overview of the data the wind turbine counts and global intensities for each precinct are computed and visualized. Before analyzing the point pattern formed by the wind turbines in the precincts of North Rhine-Westphalia some preliminary tests are performed. These encompass tests for complete spatial randomness. The rejection of this is according to [3] "is a minimal prerequisite to any serious attempt to model an observed pattern" [3]. Therefore the empirical Functions are compared to a theoretical function which corresponds to a homogeneous poisson point process which is completely spatial random [2]. 
+
+**Hypotheses Part I:**\
+$H_{0}$: The wind turbines of NRW are distributed independently at random and uniformly in each precinct.\
+$Ha_{1}$: The wind turbines of NRW exhibit a regular pattern.\
+$Ha_{2}$: The wind turbines of NRW exhibit a clustered pattern.\
+
+To confirm or reject these hypotheses the $G$-, $F$-, and $J$-functions were applied.\ 
+The $G$-function, also called the nearest-neighbour distance distribution function [2], "measures the distribution of the distances from an arbitrary event to its nearest event" [4]. In order assess the compatibility of the wind turbine point pattern with complete spatial randomness the empirical function $G_{theo}(r)$ is plotted against the theoretical function $\hat{G}_{obs}(r)$, thus the expectation under complete spatial randomness, and its Monte Carlo envelope indicated by $\hat{G}_{hi}(r)$ and $\hat{G}_{lo}(r)$ [4] for each precinct (see Figures ). 
+Complete spatial randomness would be accepted for a given point process if the $\hat{G}_{obs}(r)$ function runs close to the $G_{theo}(r)$ function or within its Monte Carlo envelope.
+A clustered pattern would be indicated if the empirical function $\hat{G}_{obs}(r)$ runs above the $G_{theo}(r)$ and its Monte Carlo envelope. Similarly a $\hat{G}_{obs}(r)$ function which runs below the $G_{theo}(r)$ and its Monte Carlo envelope would indicate a regular pattern [2][4].\ 
+
+The $F$-function, also called the empty-space function [2], "measures the distribution of all distances from an arbitrary point of the plane to its nearest event" [4]. Assessment of its results is done in a similar way as with the G-function by plotting empirical function $F_{theo}(r)$ against the theoretical function $\hat{F}_{obs}(r)$ and its Monte Carlo envelope indicated by $\hat{F}_{hi}(r)$ and $\hat{F}_{lo}(r)$ [4] (see Figures ). One would accept complete spatial randomness for the $F$-function under the same conditions as for the $G$-function. Regarding the indication of regular or clustered patterns, the reverse conditions as with the $G$-function must be applied [2][4].
+
+The $J$-function is a combination of the $G$- and $F$-function [2]. Assessment is again enabled by plotting the empirical function $J_{theo}(r)$ against the theoretical function $\hat{J}_{obs}(r)$ and its Monte Carlo envelope indicated by $\hat{J}_{hi}(r)$ and $\hat{J}_{lo}(r)$ (see Figures ). The interpretation of the $J$-function can be more complex than with the $G$- and $F$-functions since it can also be used for "characterizing the interaction
+of points in terms of its type, strength and range". Clustered and regular patters are nonetheless indicated by the $J$-function as well where values below 1 would indicate the former and values above 1 the latter [1].
 
 ```{r subsetWindTurbines, echo=TRUE}
 #create subset of wind turbines for each precinct
@@ -68,6 +105,7 @@ windTurbineDensities <- c(pppArnsberg$n/(as.numeric(st_area(precincts[precincts$
                           pppKöln$n/(as.numeric(st_area(precincts[precincts$GN == "Köln",]))/1000000),
                           pppDüsseldorf$n/(as.numeric(st_area(precincts[precincts$GN == "Düsseldorf",]))/1000000),
                           pppMünster$n/(as.numeric(st_area(precincts[precincts$GN == "Münster",]))/1000000))
+
 precintAreas <- c(as.numeric(st_area(precincts[precincts$GN == "Arnsberg",]))/1000000,
                   as.numeric(st_area(precincts[precincts$GN == "Detmold",]))/1000000,
                   as.numeric(st_area(precincts[precincts$GN == "Köln",]))/1000000,
@@ -86,44 +124,42 @@ densityMünster <- density(pppMünster, sigma = bw.diggle, diggle = TRUE, edge =
 ```
 
 ```{r plotWindTurbines, echo=FALSE, fig.show='hold', out.width='50%', fig.height=8, message=FALSE}
-barplot(windTurbineCounts, main = "Ammount of wind turbines per precinct", xlab = "Count", ylab = "Precinct", names.arg = precintNames, sub = "Fig.")
-barplot(windTurbineDensities, main = "Density of wind turbines per precinct", xlab = "Density per km²", ylab = "Precinct", names.arg = precintNames, sub = "Fig.")
+barplot(windTurbineCounts, main = "Figure x - Ammount of wind turbines per precinct", xlab = "Precinct", ylab = "Wind turbine count", names.arg = precintNames)
+barplot(windTurbineDensities, main = "Figure x - Density of wind turbines per precinct", xlab = "Precinct", ylab = "Density per km²", names.arg = precintNames)
 show(precinctDf)
 
 par(mar=c(1, 1, 1, 1))
-plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), main = "Wind turbines - Arnsberg", sub = "Fig. ")
+plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), main = "Figure x - Wind turbines - Arnsberg")
 plot(st_geometry(windTurbinesArnsberg), pch = 3, col = 'red', add = TRUE)
 
-plot(densityArnsberg, main = "Wind turbine density - Arnsberg", sub = "Fig. ", box=FALSE)
+plot(densityArnsberg, main = "Figure x - Wind turbine density - Arnsberg", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), add=TRUE)
 
-plot(st_geometry(precincts[precincts$GN == "Detmold",]), main = "Wind turbines - Detmold", sub = "Fig. ")
+plot(st_geometry(precincts[precincts$GN == "Detmold",]), main = "Figure x - Wind turbines - Detmold")
 plot(st_geometry(windTurbinesDetmold), pch = 3, col = 'red', add = TRUE)
 
-plot(densityDetmold, main = "Wind turbine density - Detmold", sub = "Fig. ", box=FALSE)
+plot(densityDetmold, main = "Figure x - Wind turbine density - Detmold", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Detmold",]), add=TRUE)
 
-plot(st_geometry(precincts[precincts$GN == "Köln",]), main = "Wind turbines - Köln", sub = "Fig. ")
+plot(st_geometry(precincts[precincts$GN == "Köln",]), main = "Figure x - Wind turbines - Köln")
 plot(st_geometry(windTurbinesKöln), pch = 3, col = 'red', add = TRUE)
 
-plot(densityKöln, main = "Wind turbine density - Köln", sub = "Fig. ", box=FALSE)
+plot(densityKöln, main = "Figure x - Wind turbine density - Köln", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Köln",]), add=TRUE)
 
-plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), main = "Wind turbines - Düsseldorf", sub = "Fig. ")
+plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), main = "Figure x - Wind turbines - Düsseldorf")
 plot(st_geometry(windTurbinesDüsseldorf), pch = 3, col = 'red', add = TRUE)
 
-plot(densityDüsseldorf, main = "Wind turbine density - Düsseldorf", sub = "Fig. ", box=FALSE)
+plot(densityDüsseldorf, main = "Figure x - Wind turbine density - Düsseldorf", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), add=TRUE)
 
-plot(st_geometry(precincts[precincts$GN == "Münster",]), main = "Wind turbines of Münster precinct", sub = "Fig. ")
+plot(st_geometry(precincts[precincts$GN == "Münster",]), main = "Figure x - Wind turbines of Münster precinct")
 plot(st_geometry(windTurbinesMünster), pch = 3, col = 'red', add = TRUE)
 
-plot(densityMünster, main = "Wind turbine density of Münster precinct", sub = "Fig. ", box=FALSE)
+plot(densityMünster, main = "Figure x - Wind turbine density - Münster", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Münster",]), add=TRUE)
 ```
 
-## Methods
-### Part I - Preliminary testing
 ```{r gFunction, echo=FALSE, message=FALSE, warning=FALSE}
 #compute G-, F- and J-function for precinct Arnsberg
 gEnvArnsberg <- envelope(pppArnsberg, fun = Gest, nsim = 99, clipdata = TRUE, correction = "best", verbose = FALSE)
@@ -152,30 +188,37 @@ jEnvMünster <- envelope(pppMünster, fun = Jest, nsim = 99, clipdata = TRUE, co
 ```
 ```{r gFunctionPlot, echo=FALSE, fig.show='hold', out.width='50%', fig.height=8, message=FALSE, warning=FALSE}
 #plot G-function for precincts
-plot(gEnvArnsberg, main = "G-function - Arnsberg", sub = "Fig. ")
-plot(gEnvDetmold, main = "G-function - Detmold", sub = "Fig. ")
-plot(gEnvKöln, main = "G-function - Köln", sub = "Fig. ")
-plot(gEnvDüsseldorf, main = "G-function - Düsseldorf", sub = "Fig. ")
-plot(gEnvMünster, main = "G-function - Münster", sub = "Fig. ")
+plot(gEnvArnsberg, main = "Figure x - G-function - Arnsberg")
+plot(gEnvDetmold, main = "Figure x - G-function - Detmold")
+plot(gEnvKöln, main = "Figure x - G-function - Köln")
+plot(gEnvDüsseldorf, main = "Figure x - G-function - Düsseldorf")
+plot(gEnvMünster, main = "Figure x - G-function - Münster")
 ```
 ```{r fFunctionPlot, echo=FALSE, fig.show='hold', out.width='50%', fig.height=8, message=FALSE, warning=FALSE}
 #plot F-function for precincts
-plot(fEnvArnsberg, main = "F-function - Arnsberg", sub = "Fig. ")
-plot(fEnvDetmold, main = "F-function - Detmold", sub = "Fig. ")
-plot(fEnvKöln, main = "F-function - Köln", sub = "Fig. ")
-plot(fEnvDüsseldorf, main = "F-function - Düsseldorf", sub = "Fig. ")
-plot(fEnvMünster, main = "F-function - Münster", sub = "Fig. ")
+plot(fEnvArnsberg, main = "Figure x - F-function - Arnsberg")
+plot(fEnvDetmold, main = "Figure x - F-function - Detmold")
+plot(fEnvKöln, main = "Figure x - F-function - Köln")
+plot(fEnvDüsseldorf, main = "Figure x - F-function - Düsseldorf")
+plot(fEnvMünster, main = "Figure x - F-function - Münster")
 ```
 ```{r jFunctionPlot, echo=FALSE, fig.height=8, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
 #plot J-function for precincts
-plot(jEnvArnsberg, main = "J-function - Arnsberg", sub = "Fig. ", ylim=c(0,12))
-plot(jEnvDetmold, main = "J-function - Detmold", sub = "Fig. ", ylim=c(0,12))
-plot(jEnvKöln, main = "J-function - Köln", sub = "Fig. ", ylim=c(0,12))
-plot(jEnvDüsseldorf, main = "J-function - Düsseldorf", sub = "Fig. ", ylim=c(0,12))
-plot(jEnvMünster, main = "J-function - Münster", sub = "Fig. ", ylim=c(0,12))
+plot(jEnvArnsberg, main = "Figure x - J-function - Arnsberg", ylim=c(0,12))
+plot(jEnvDetmold, main = "Figure x - J-function - Detmold", ylim=c(0,12))
+plot(jEnvKöln, main = "Figure x - J-function - Köln", ylim=c(0,12))
+plot(jEnvDüsseldorf, main = "Figure x - J-function - Düsseldorf", ylim=c(0,12))
+plot(jEnvMünster, main = "Figure x - J-function - Münster", ylim=c(0,12))
 ```
 
-### Part II - Local intensity
+### Part II - Local intensity 
+A firsts step towards finding and understanding a possible relationship between the locations of wind turbines and  corresponding values of the specific energy power density could be a local density analysis using the specific energy power density as a  tessellated covariate. The densities are computed for the subareas formed by the pixels of equal value. Such an approach can be used if it is believed that the point pattern process is driven by the values of the underlying tessellated surface. Here the assumption is that areas with high potential power yields which are indicated by high specific energy power density values should exhibit higher wind turbine densities. Since the densities are not always normally distributed according to the Shapiro-Wilk test the Spearman rank correlation is used [5].
+
+**Hypotheses Part II:**\
+$H_{0}$: There is no correlation between local wind turbine densities and the specific energy power density values.\
+$Ha_{1}$: There is a positive correlation between local wind turbine densities and the specific energy power density values.\
+$Ha_{2}$: There is a negative correlation between local wind turbine densities and the specific energy power density values.\
+
 ```{r cropYields, echo=FALSE, fig.show='hold', out.width='50%', message=FALSE, warning=FALSE}
 potentialYieldsArnsbergCropped <- crop(potentialYields, precincts[precincts$GN == "Arnsberg",])
 potentialYieldsArnsbergMasked <- mask(potentialYieldsArnsbergCropped, precincts[precincts$GN == "Arnsberg",])
@@ -192,18 +235,6 @@ potentialYieldsDüsseldorfMasked <- mask(potentialYieldsDüsseldorfCropped, prec
 potentialYieldsMünsterCropped <- crop(potentialYields, precincts[precincts$GN == "Münster",])
 potentialYieldsMünsterMasked <- mask(potentialYieldsMünsterCropped, precincts[precincts$GN == "Münster",])
 ```
-```{r plotYields, echo=FALSE, fig.show='hold', out.width='50%', fig.height=8, message=FALSE, warning=FALSE}
-plot(potentialYieldsArnsbergMasked, sub = "Fig.", main = "Potential yields - Arnsberg")
-
-plot(potentialYieldsDetmoldMasked, sub = "Fig. ", main = "Potential yields - Detmold")
-
-plot(potentialYieldsKölnMasked, sub = "Fig. ", main = "Potential yields - Köln")
-
-plot(potentialYieldsDüsseldorfMasked, sub = "Fig. ", main = "Potential yields - Düsseldorf")
-
-plot(potentialYieldsMünsterMasked, sub = "Fig. ", main = "Potential yields - Münster")
-
-```
 ```{r localDensity, echo=TRUE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
 breaks <- c(1,2,3,4,5,6,7)
 
@@ -211,43 +242,86 @@ potentialYieldsArnsbergClassified <- cut(potentialYieldsArnsbergMasked, breaks=b
 tessellationArnsberg <- tess(image=potentialYieldsArnsbergClassified)  
 localDensityArnsberg <- quadratcount(pppArnsberg, tess=tessellationArnsberg)  
 localDensityArnsberg.dens <- intensity(localDensityArnsberg) 
-
+localDensityArnsberg.df <- data.frame(localDensityArnsberg.dens)
+shapiro.test(as.numeric(localDensityArnsberg.df$tile))
+shapiro.test(localDensityArnsberg.df$Freq)
+localDensityArnsberg.df$densityRank <- rank(localDensityArnsberg.df$Freq, ties.method= "max")
+localDensityArnsberg.cor <-cor.test(as.numeric(localDensityArnsberg.df$tile), localDensityArnsberg.df$densityRank,  method = "spearman") 
 
 potentialYieldsDetmoldClassified <- cut(potentialYieldsDetmoldMasked, breaks=breaks)
 tessellationDetmold <- tess(image=potentialYieldsDetmoldClassified)  
 localDensityDetmold <- quadratcount(pppDetmold, tess=tessellationDetmold)  
 localDensityDetmold.dens <- intensity(localDensityDetmold) 
-
+localDensityDetmold.df <- data.frame(localDensityDetmold.dens)
+shapiro.test(as.numeric(localDensityArnsberg.df$tile))
+shapiro.test(localDensityArnsberg.df$Freq)
+localDensityDetmold.df$densityRank <- rank(localDensityDetmold.df$Freq, ties.method= "max")
+localDensityDetmold.cor <-cor.test(as.numeric(localDensityDetmold.df$tile), localDensityDetmold.df$densityRank,  method = "spearman") 
 
 potentialYieldsKölnClassified <- cut(potentialYieldsKölnMasked, breaks=breaks)
 tessellationKöln <- tess(image=potentialYieldsKölnClassified)  
 localDensityKöln <- quadratcount(pppKöln, tess=tessellationKöln) 
 localDensityKöln.dens <- intensity(localDensityKöln) 
+localDensityKöln.df <- data.frame(localDensityKöln.dens)
+shapiro.test(as.numeric(localDensityArnsberg.df$tile))
+shapiro.test(localDensityArnsberg.df$Freq)
+localDensityKöln.df$densityRank <- rank(localDensityKöln.df$Freq, ties.method= "max")
+localDensityKöln.cor <-cor.test(as.numeric(localDensityKöln.df$tile), localDensityKöln.df$densityRank,  method = "spearman") 
 
 potentialYieldsDüsseldorfClassified <- cut(potentialYieldsDüsseldorfMasked, breaks=breaks)
 tessellationDüsseldorf <- tess(image=potentialYieldsDüsseldorfClassified)  
 localDensityDüsseldorf <- quadratcount(pppDüsseldorf, tess=tessellationDüsseldorf)  
 localDensityDüsseldorf.dens <- intensity(localDensityDüsseldorf) 
-
+localDensityDüsseldorf.df <- data.frame(localDensityDüsseldorf.dens)
+shapiro.test(as.numeric(localDensityArnsberg.df$tile))
+shapiro.test(localDensityArnsberg.df$Freq)
+localDensityDüsseldorf.df$densityRank <- rank(localDensityDüsseldorf.df$Freq, ties.method= "max")
+localDensityDüsseldorf.cor <-cor.test(as.numeric(localDensityDüsseldorf.df$tile), localDensityDüsseldorf.df$densityRank,  method = "spearman") 
 
 potentialYieldsMünsterClassified <- cut(potentialYieldsMünsterMasked, breaks=breaks)
 tessellationMünster <- tess(image=potentialYieldsMünsterClassified)  
-localDensityMünster <- quadratcount(pppMünster, tess=tessellationArnsberg)  
+localDensityMünster <- quadratcount(pppMünster, tess=tessellationMünster)  
 localDensityMünster.dens <- intensity(localDensityMünster) 
-
+localDensityMünster.df <- data.frame(localDensityMünster.dens)
+shapiro.test(as.numeric(localDensityArnsberg.df$tile))
+shapiro.test(localDensityArnsberg.df$Freq)
+localDensityMünster.df$densityRank <- rank(localDensityMünster.df$Freq, ties.method= "max")
+localDensityMünster.cor <-cor.test(as.numeric(localDensityMünster.df$tile), localDensityMünster.df$densityRank,  method = "spearman") 
 ```
-```{r plotLocalDensities, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
-barplot(localDensityArnsberg.dens, main = "Local wind turbine densities - Arnsberg", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
+```{r plotYields, echo=FALSE, fig.show='hold', out.width='50%', fig.height=8, message=FALSE, warning=FALSE}
+plot(potentialYieldsArnsbergMasked, main = "Figure x - Potential yields - Arnsberg", zlim = c(1, 7))
+plot(st_geometry(windTurbinesArnsberg), pch = 3, col = 'black', add = TRUE)
+barplot(localDensityArnsberg.dens, main = "Figure x - Local wind turbine densities - Arnsberg", xlab = "Potential yield", ylab = "Wind turbine density")
+localDensityArnsberg.cor
 
-barplot(localDensityDetmold.dens, main = "Local wind turbine densities - Detmold", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
+plot(potentialYieldsDetmoldMasked, main = "Figure x - Potential yields - Detmold", zlim = c(1, 7))
+plot(st_geometry(windTurbinesDetmold), pch = 3, col = 'black', add = TRUE)
+barplot(localDensityDetmold.dens, main = "Figure x - Local wind turbine densities - Detmold", xlab = "Potential yield", ylab = "Wind turbine density")
+localDensityDetmold.cor
 
-barplot(localDensityKöln.dens, main = "Local wind turbine densities - Köln", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
+plot(potentialYieldsKölnMasked, main = "Figure x - Potential yields - Köln", zlim = c(1, 7))
+plot(st_geometry(windTurbinesKöln), pch = 3, col = 'black', add = TRUE)
+barplot(localDensityKöln.dens, main = "Figure x - Local wind turbine densities - Köln", xlab = "Potential yield", ylab = "Wind turbine density")
+localDensityKöln.cor
 
-barplot(localDensityDüsseldorf.dens, main = "Local wind turbine densities - Düsseldorf", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
+plot(potentialYieldsDüsseldorfMasked, main = "Figure x - Potential yields - Düsseldorf", zlim = c(1, 7))
+plot(st_geometry(windTurbinesDüsseldorf), pch = 3, col = 'black', add = TRUE)
+barplot(localDensityDüsseldorf.dens, main = "Figure x - Local wind turbine densities - Düsseldorf", xlab = "Potential yield", ylab = "Wind turbine density")
+localDensityDüsseldorf.cor
 
-barplot(localDensityMünster.dens, main = "Local wind turbine densities - Münster", xlab = "Potential yield", ylab = "Wind turbine density", sub = "Fig.")
+plot(potentialYieldsMünsterMasked, main = "Figure x - Potential yields - Münster", zlim = c(1, 7))
+plot(st_geometry(windTurbinesMünster), pch = 3, col = 'black', add = TRUE)
+barplot(localDensityMünster.dens, main = "Figure x - Local wind turbine densities - Münster", xlab = "Potential yield", ylab = "Wind turbine density")
+localDensityMünster.cor
 ```
+
 ### Part III - Intensity as function of covariate
+Based on the Parts II and II the attempt is made to model the wind turbine intensity as a function of the specific energy power density [2]. Therefore a Poisson point process model is fitted to the wind turbines using the specific energy power density as a covariate. To asses the quality of the resulting models a second Poisson point process model is fitted to the wind turbines only. The comparison between the models is carried out using the likelihood ratio test. 
+
+**Hypotheses Part III:**\
+$H_{0}$: The point process intensity is not a function of the specific energy power density.\
+$Ha$: The point process intensity is a function of the specific energy power density.\
+
 ```{r intensityFunction, echo=TRUE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
 covariantArnsberg <- as.im.RasterLayer(potentialYieldsArnsbergMasked)
 ppmArnsbergCov <- ppm(pppArnsberg ~ covariantArnsberg)
@@ -275,20 +349,20 @@ ppmMünster <- ppm(pppMünster ~ 1)
 ppmMünsterPred <- predict(ppmMünsterCov)
 ```
 ```{r plotIntensityFunction, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
-plot(effectfun(ppmArnsbergCov, "covariantArnsberg", se.fit=TRUE), main=NULL, las=1)
-plot(ppmArnsbergPred, box=FALSE)
+plot(effectfun(ppmArnsbergCov, "covariantArnsberg", se.fit=TRUE), main="Figure x - ", las=1)
+plot(ppmArnsbergPred, box=FALSE, main="Figure x - ")
 
-plot(effectfun(ppmDetmoldCov, "covariantDetmold", se.fit=TRUE), main=NULL, las=1)
-plot(ppmDetmoldPred, box=FALSE)
+plot(effectfun(ppmDetmoldCov, "covariantDetmold", se.fit=TRUE), main="Figure x - ", las=1)
+plot(ppmDetmoldPred, box=FALSE, main="Figure x - ")
 
-plot(effectfun(ppmKölnCov, "covariantKöln", se.fit=TRUE), main=NULL, las=1)
-plot(ppmKölnPred, box=FALSE)
+plot(effectfun(ppmKölnCov, "covariantKöln", se.fit=TRUE), main="Figure x - ", las=1)
+plot(ppmKölnPred, box=FALSE, main="Figure x - ")
 
-plot(effectfun(ppmDüsseldorfCov, "covariantDüsseldorf", se.fit=TRUE), main=NULL, las=1)
-plot(ppmDüsseldorfPred, box=FALSE)
+plot(effectfun(ppmDüsseldorfCov, "covariantDüsseldorf", se.fit=TRUE), main="Figure x - ", las=1)
+plot(ppmDüsseldorfPred, box=FALSE, main="Figure x - ")
 
-plot(effectfun(ppmMünsterCov, "covariantMünster", se.fit=TRUE), main=NULL, las=1)
-plot(ppmMünsterPred, box=FALSE)
+plot(effectfun(ppmMünsterCov, "covariantMünster", se.fit=TRUE), main="Figure x - ", las=1)
+plot(ppmMünsterPred, box=FALSE, main="Figure x - ")
 ```
 ```{r testFunction, echo=TRUE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
 anova(ppmArnsberg, ppmArnsbergCov, test="LRT")
@@ -297,7 +371,24 @@ anova(ppmKöln, ppmKölnCov, test="LRT")
 anova(ppmDüsseldorf, ppmDüsseldorfCov, test="LRT")
 anova(ppmMünster, ppmMünsterCov, test="LRT")
 ```
+
 ## Results
+### Part I
+### Part II
+### Part III
+
 ## Discussion 
+
 ## Sources
+[1] J. Illian, A. Penttinen, H. Stoyan and D. Stoyan, Statistical Analysis and Modelling
+of Spatial Point Patterns, 1st edition Chichester: John Wiley & Sons Ltd., 2008
+
+[2] A. Baddeley, E. Rubak, R. Turner, Spatial Point Patterns Methodology and Applications with R, 
+1st edition Boca Raton: Taylor & Francis Group, LLC, 2016
+
+[3] P. J. Diggle, Statistical Analysis of Spatial and Spatio-Temporal Point Patterns, 3rd edition Boca Raton: Taylor & Francis Group, LLC, 2014
+
+[4] R. S. Bivand, E. Pebesma, V. Gómez-Rubio, Applied Spatial Data Analysis with R, 2nd edition New York: Springer Science+Business Media 2013
+
+[5] C. Reimann, P. Filzmoser, R. G. Garrett, R. Dutter, Statistical Data Analysis Explained Applied Environmental Statistics with R, 1st edition Chichester: John Wiley & Sons Ltd., 2008
 
