@@ -1,0 +1,890 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same} % disable monospaced font for URLs
+\hypersetup{
+  pdftitle={Final Assignment Analysis of Spatiotemporal Data},
+  pdfauthor={Alexander Pilz},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Final Assignment Analysis of Spatiotemporal Data}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Spatial point pattern analysis of wind turbines in the
+precincts of NRW}
+\author{Alexander Pilz}
+\date{2023-01-30}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+In July 2022, the German government formulated the ``Act to Increase and
+Accelerate the Expansion of Onshore Wind Energy Facilities'' which
+underscores the goal of increasing the use of renewable energy sources
+in Germany. The law stipulates that 1.8\% of the area of the federal
+state of North Rhine-Westphalia (NRW) must be used for power generation
+from wind energy {[}8{]}. The power yields of such facilities are
+depended on a multitude of factors. One would argue that wind turbines
+should build where their potential energy yields are the highest. The
+planning and execution of construction efforts is the task of multiple
+administrative units. The federal state (Land NRW) and precincts
+(Bezirke) identify and disclose areas which are to be used for the power
+generation by means of wind energy in the federal state development plan
+(Landesentwicklungsplan) and the derivative regional plans
+(Regionalpläne). The counties (Kreise) are only responsible for the
+planning and subsequent construction of the actual wind parks. Thus the
+point pattern analysis is conducted on precinct level {[}9{]}{[}10{]}.
+Instead of concerning itself with future planning practices the
+following point pattern analysis, conducted during the seminar Analysis
+of Spatio temporal data in 2022/23, tries to find and describe a
+possible relation between the point pattern formed by existing wind
+turbines in NRW and the environmental Variable of the specific energy
+power density. This in turn could shed some light on the driving factors
+which created the existing point pattern. Results such studies could be
+used to identify shortcomings of decision making processes and might be
+helpful for their optimization.
+
+\hypertarget{data}{%
+\subsection{Data}\label{data}}
+
+The datasets employed during this point pattern analysis are all
+available openly and free of charge at the GEOportal.NRW. The employed
+coordinate reference system of all datasets is ETRS89 / UTM zone 32N
+commonly used for official and cadastral data in NRW. The analysis
+itself was carried out using the programming language R and the packages
+sf, raster, spatstat, plyr, maptools and their dependencies.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#import libraries}
+\FunctionTok{library}\NormalTok{(sf) }
+\FunctionTok{library}\NormalTok{(raster)}
+\FunctionTok{library}\NormalTok{(spatstat)}
+\FunctionTok{library}\NormalTok{(plyr)}
+\FunctionTok{library}\NormalTok{(maptools)}
+\end{Highlighting}
+\end{Shaded}
+
+The dataset containing polygonal features of the precincts of the
+federal state of NRW lists five precincts namely Arnsberg, Detmold,
+Köln, Düsseldorf and Münster (see Figure 1).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#import precincts}
+\NormalTok{precincts }\OtherTok{\textless{}{-}} \FunctionTok{st\_read}\NormalTok{(}\StringTok{"data/dvg2\_EPSG25832\_Shape/dvg2rbz\_nw.shp"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Reading layer `dvg2rbz_nw' from data source 
+##   `C:\Users\Alexander\Documents\GitHub\AnalysisOfSpatioTemporalData2022\data\dvg2_EPSG25832_Shape\dvg2rbz_nw.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 5 features and 8 fields
+## Geometry type: MULTIPOLYGON
+## Dimension:     XY
+## Bounding box:  xmin: 280375 ymin: 5577680 xmax: 531791.2 ymax: 5820212
+## Projected CRS: ETRS89 / UTM zone 32N
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#union precincts}
+\NormalTok{precinctsUnion }\OtherTok{\textless{}{-}} \FunctionTok{st\_union}\NormalTok{(precincts)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotPrecincts-1.pdf}
+
+The point pattern to be examined represents the existing wind turbines
+in NRW. The Shapefile contains 3797 point features with 12 attribute
+fields which contain information about the wind turbine like the
+diameter of its rotor, the year of its commissioning and the
+administrative unit in which they are situated (see Figure 2).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#import wind turbines}
+\NormalTok{windTurbines }\OtherTok{\textless{}{-}} \FunctionTok{st\_read}\NormalTok{(}\StringTok{"data/OpenEE{-}Windenergie\_EPSG25832\_Shape/Windbetrieb\_Standorte.shp"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Reading layer `Windbetrieb_Standorte' from data source 
+##   `C:\Users\Alexander\Documents\GitHub\AnalysisOfSpatioTemporalData2022\data\OpenEE-Windenergie_EPSG25832_Shape\Windbetrieb_Standorte.shp' 
+##   using driver `ESRI Shapefile'
+## Simple feature collection with 3797 features and 12 fields
+## Geometry type: MULTIPOINT
+## Dimension:     XY
+## Bounding box:  xmin: 287724.5 ymin: 5577926 xmax: 525487.7 ymax: 5816566
+## Projected CRS: ETRS89 / UTM zone 32N
+\end{verbatim}
+
+\includegraphics{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotTurbines-1.pdf}
+
+The environmental variable to be used for this point pattern analysis,
+namely the specific energy power density (SEPD), was sourced as a raster
+file. The raster has a resolution of 100x100 meters and covers all of
+NRW. The data is available in different height levels above ground. Here
+the data corresponding to a height of 100 meters is used. The SEPD,
+ranging from 0 to 7, is a measure of the power of the wind flowing
+through an area. It indicates how much power (in watts) is converted per
+square meter of rotor area. The SEPD can be seen as an indicator for the
+suitability of a site for wind energy use (see Figure 3){[}7{]}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#import potential yields}
+\NormalTok{potentialYields }\OtherTok{\textless{}{-}} \FunctionTok{raster}\NormalTok{(}\StringTok{"data/Energieleistungsdichte{-}100m\_EPSG25832\_TIFF/en\_100m\_klas.tif"}\NormalTok{)}
+\CommentTok{\#create vector of yields}
+\NormalTok{yields }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"1"}\NormalTok{, }\StringTok{"2"}\NormalTok{, }\StringTok{"3"}\NormalTok{, }\StringTok{"4"}\NormalTok{, }\StringTok{"5"}\NormalTok{, }\StringTok{"6"}\NormalTok{, }\StringTok{"7"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYieldsI-1.pdf}
+
+\hypertarget{methods}{%
+\subsection{Methods}\label{methods}}
+
+\hypertarget{part-i---preliminary-analysis-and-testing}{%
+\subsubsection{Part I - Preliminary analysis and
+testing}\label{part-i---preliminary-analysis-and-testing}}
+
+In order to get an overview of the data the wind turbine counts and
+global intensities for each precinct are computed and visualized. When
+computing the global intensities from the wind turbine point pattern the
+smoothing kernel bandwidth \(sigma\) is chosen using a method described
+in {[}6{]}. Also Jones-Diggle improved edge corrections are applied.
+Before analyzing the point pattern formed by the wind turbines in the
+precincts of NRW some preliminary tests are performed. These encompass
+tests for complete spatial randomness. The rejection of this is
+according to {[}3{]} ``is a minimal prerequisite to any serious attempt
+to model an observed pattern'' {[}3{]}. Therefore the empirical
+Functions are compared to a theoretical function which corresponds to a
+homogeneous poisson point process which is conforms to complete spatial
+randomness {[}2{]}.
+
+\textbf{Hypotheses Part I:}\\
+\(H_{0} - I\): The wind turbines of NRW are distributed independently at
+random and uniformly in each precinct.\\
+
+\(Ha_{1} - I\): The wind turbines of NRW exhibit a regular pattern and
+are not distributed independently at random and uniformly in each
+precinct.\\
+
+\(Ha_{2} - I\): The wind turbines of NRW exhibit a clustered pattern and
+are not distributed independently at random and uniformly in each
+precinct.\\
+
+To confirm or reject these hypotheses the \(G\)-, \(F\)-, and
+\(J\)-functions were applied. When computing the \(G\)-, \(F\)-, and
+\(J\)-functions the best edge correction method is chosen automatically.
+The Monte-Carlo envelopes are computed simulating 99 point processes.
+The \(G\)-function, also called the nearest-neighbour distance
+distribution function {[}2{]}, ``measures the distribution of the
+distances from an arbitrary event to its nearest event'' {[}4{]}. In
+order assess the compatibility of the wind turbine point pattern with
+complete spatial randomness the empirical function \(\hat{G}_{obs}\) is
+plotted against the theoretical function \((r)G_{theo}(r)\), thus the
+expectation under complete spatial randomness, and its Monte Carlo
+envelope indicated by \(\hat{G}_{hi}(r)\) and \(\hat{G}_{lo}(r)\)
+{[}4{]} for each precinct (see figures ). Complete spatial randomness
+would be accepted for a given point process if the \(\hat{G}_{obs}(r)\)
+function runs close to the \(G_{theo}(r)\) function or within its Monte
+Carlo envelope. A clustered pattern would be indicated if the empirical
+function \(\hat{G}_{obs}(r)\) runs above the \(G_{theo}(r)\) and its
+Monte Carlo envelope. Similarly a \(\hat{G}_{obs}(r)\) function which
+runs below the \(G_{theo}(r)\) and its Monte Carlo envelope would
+indicate a regular pattern {[}2{]}{[}4{]}.
+
+The \(F\)-function, also called the empty-space function {[}2{]},
+``measures the distribution of all distances from an arbitrary point of
+the plane to its nearest event'' {[}4{]}. Assessment of its results is
+done in a similar way as with the G-function by plotting empirical
+function \(\hat{F}_{obs}(r)\) against the theoretical function
+\(F_{theo}(r)\) and its Monte Carlo envelope indicated by
+\(\hat{F}_{hi}(r)\) and \(\hat{F}_{lo}(r)\) {[}4{]} (see figures ). One
+would accept complete spatial randomness for the \(F\)-function under
+the same conditions as for the \(G\)-function. Regarding the indication
+of regular or clustered patterns, the reverse conditions as with the
+\(G\)-function must be applied {[}2{]}{[}4{]}.\\
+
+The \(J\)-function is a combination of the \(G\)- and \(F\)-function
+{[}2{]}. Assessment is again done by plotting the empirical function
+\(\hat{J}_{obs}(r)\) against the theoretical function \(J_{theo}(r)\)
+and its Monte Carlo envelope indicated by \(\hat{J}_{hi}(r)\) and
+\(\hat{J}_{lo}(r)\) (see figures ). The interpretation of the
+\(J\)-function can be more complex than with the \(G\)- and
+\(F\)-functions since it can also be used for ``characterizing the
+interaction of points in terms of its type, strength and range''.
+Clustered and regular patters are nonetheless indicated by the
+\(J\)-function as well where values below 1 would indicate the former
+and values above 1 the latter {[}1{]}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#create subset of wind turbines for each precinct}
+\NormalTok{windTurbinesArnsberg }\OtherTok{\textless{}{-}} \FunctionTok{st\_intersection}\NormalTok{(windTurbines, precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Arnsberg"}\NormalTok{,])}
+\NormalTok{windTurbinesDetmold }\OtherTok{\textless{}{-}} \FunctionTok{st\_intersection}\NormalTok{(windTurbines, precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Detmold"}\NormalTok{,])}
+\NormalTok{windTurbinesKöln }\OtherTok{\textless{}{-}} \FunctionTok{st\_intersection}\NormalTok{(windTurbines, precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Köln"}\NormalTok{,])}
+\NormalTok{windTurbinesDüsseldorf }\OtherTok{\textless{}{-}} \FunctionTok{st\_intersection}\NormalTok{(windTurbines, precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Düsseldorf"}\NormalTok{,])}
+\NormalTok{windTurbinesMünster }\OtherTok{\textless{}{-}} \FunctionTok{st\_intersection}\NormalTok{(windTurbines, precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Münster"}\NormalTok{,])}
+
+\CommentTok{\#create planar point patterns from wind turbine subsets using precincts as observation windows}
+\NormalTok{pppArnsberg }\OtherTok{\textless{}{-}} \FunctionTok{as.ppp}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\FunctionTok{st\_geometry}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Arnsberg"}\NormalTok{,]), }\FunctionTok{st\_geometry}\NormalTok{(windTurbinesArnsberg)))}
+\NormalTok{pppDetmold }\OtherTok{\textless{}{-}} \FunctionTok{as.ppp}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\FunctionTok{st\_geometry}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Detmold"}\NormalTok{,]), }\FunctionTok{st\_geometry}\NormalTok{(windTurbinesDetmold)))}
+\NormalTok{pppKöln }\OtherTok{\textless{}{-}} \FunctionTok{as.ppp}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\FunctionTok{st\_geometry}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Köln"}\NormalTok{,]), }\FunctionTok{st\_geometry}\NormalTok{(windTurbinesKöln)))}
+\NormalTok{pppDüsseldorf }\OtherTok{\textless{}{-}} \FunctionTok{as.ppp}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\FunctionTok{st\_geometry}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Düsseldorf"}\NormalTok{,]), }\FunctionTok{st\_geometry}\NormalTok{(windTurbinesDüsseldorf)))}
+\NormalTok{pppMünster }\OtherTok{\textless{}{-}} \FunctionTok{as.ppp}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\FunctionTok{st\_geometry}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Münster"}\NormalTok{,]), }\FunctionTok{st\_geometry}\NormalTok{(windTurbinesMünster)))}
+
+\CommentTok{\#create vector of precinct names and wind turbine counts}
+\NormalTok{precintNames }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Arnsberg"}\NormalTok{, }\StringTok{"Detmold"}\NormalTok{, }\StringTok{"Köln"}\NormalTok{, }\StringTok{"Düsseldorf"}\NormalTok{, }\StringTok{"Münster"}\NormalTok{)}
+\NormalTok{windTurbineCounts }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(pppArnsberg}\SpecialCharTok{$}\NormalTok{n, pppDetmold}\SpecialCharTok{$}\NormalTok{n, pppKöln}\SpecialCharTok{$}\NormalTok{n, pppDüsseldorf}\SpecialCharTok{$}\NormalTok{n, pppMünster}\SpecialCharTok{$}\NormalTok{n)}
+
+\CommentTok{\#compute wind turbine density for each precinct}
+\NormalTok{windTurbineDensities }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(pppArnsberg}\SpecialCharTok{$}\NormalTok{n}\SpecialCharTok{/}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Arnsberg"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{), }
+\NormalTok{                          pppDetmold}\SpecialCharTok{$}\NormalTok{n}\SpecialCharTok{/}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Detmold"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{), }
+\NormalTok{                          pppKöln}\SpecialCharTok{$}\NormalTok{n}\SpecialCharTok{/}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Köln"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{),}
+\NormalTok{                          pppDüsseldorf}\SpecialCharTok{$}\NormalTok{n}\SpecialCharTok{/}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Düsseldorf"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{),}
+\NormalTok{                          pppMünster}\SpecialCharTok{$}\NormalTok{n}\SpecialCharTok{/}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Münster"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{))}
+
+\CommentTok{\#compute precinct areas in km²}
+\NormalTok{precintAreas }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Arnsberg"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{,}
+                  \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Detmold"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{,}
+                  \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Köln"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{,}
+                  \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Düsseldorf"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{,}
+                  \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{st\_area}\NormalTok{(precincts[precincts}\SpecialCharTok{$}\NormalTok{GN }\SpecialCharTok{==} \StringTok{"Münster"}\NormalTok{,]))}\SpecialCharTok{/}\DecValTok{1000000}\NormalTok{)}
+
+\CommentTok{\#create dataframe with precinct names, areas, wind turbine counts and densities}
+\NormalTok{precinctDf }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(precintNames, precintAreas, windTurbineCounts, windTurbineDensities)}
+\FunctionTok{colnames}\NormalTok{(precinctDf) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Precinct\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Area in km²\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Turbine count\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Turbine density\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\#compute densities of wind turbines for each precinct}
+\NormalTok{densityArnsberg }\OtherTok{\textless{}{-}} \FunctionTok{density}\NormalTok{(pppArnsberg, }\AttributeTok{sigma =}\NormalTok{ bw.diggle, }\AttributeTok{diggle =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{edge =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{densityDetmold }\OtherTok{\textless{}{-}} \FunctionTok{density}\NormalTok{(pppDetmold, }\AttributeTok{sigma =}\NormalTok{ bw.diggle, }\AttributeTok{diggle =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{edge =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{densityKöln }\OtherTok{\textless{}{-}} \FunctionTok{density}\NormalTok{(pppKöln, }\AttributeTok{sigma =}\NormalTok{ bw.diggle, }\AttributeTok{diggle =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{edge =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{densityDüsseldorf }\OtherTok{\textless{}{-}} \FunctionTok{density}\NormalTok{(pppDüsseldorf, }\AttributeTok{sigma =}\NormalTok{ bw.diggle, }\AttributeTok{diggle =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{edge =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{densityMünster }\OtherTok{\textless{}{-}} \FunctionTok{density}\NormalTok{(pppMünster, }\AttributeTok{sigma =}\NormalTok{ bw.diggle, }\AttributeTok{diggle =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{edge =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     Precinct Area in km² Turbine count Turbine density
+## 1   Arnsberg    8007.106           633      0.07905478
+## 2    Detmold    6520.132          1002      0.15367787
+## 3       Köln    7362.591           678      0.09208714
+## 4 Düsseldorf    5291.773           417      0.07880156
+## 5    Münster    6914.908          1067      0.15430429
+\end{verbatim}
+
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-1}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-2}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-3}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-4}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-5}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-6}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-7}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-8}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-9}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-10}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-11}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotWindTurbines-12}
+
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/gFunctionPlot-1}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/gFunctionPlot-2}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/gFunctionPlot-3}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/gFunctionPlot-4}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/gFunctionPlot-5}
+
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/fFunctionPlot-1}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/fFunctionPlot-2}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/fFunctionPlot-3}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/fFunctionPlot-4}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/fFunctionPlot-5}
+
+\begin{verbatim}
+## Error in rebound.owin(X[[i]], ...) : 
+##   The new rectangle 'rect' does not contain the window 'win'
+\end{verbatim}
+
+\begin{verbatim}
+## Error in rebound.owin(X[[i]], ...) : 
+##   The new rectangle 'rect' does not contain the window 'win'
+\end{verbatim}
+
+\begin{verbatim}
+## Error in rebound.owin(X[[i]], ...) : 
+##   The new rectangle 'rect' does not contain the window 'win'
+\end{verbatim}
+
+\begin{verbatim}
+## Error in rebound.owin(X[[i]], ...) : 
+##   The new rectangle 'rect' does not contain the window 'win'
+\end{verbatim}
+
+\begin{verbatim}
+## Error in rebound.owin(X[[i]], ...) : 
+##   The new rectangle 'rect' does not contain the window 'win'
+\end{verbatim}
+
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/jFunctionPlot-1}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/jFunctionPlot-2}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/jFunctionPlot-3}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/jFunctionPlot-4}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/jFunctionPlot-5}
+
+\hypertarget{part-ii---local-intensity}{%
+\subsubsection{Part II - Local
+intensity}\label{part-ii---local-intensity}}
+
+A firsts step towards finding and understanding a possible relationship
+between a point pattern and corresponding values of an underlying
+variable could be a local density analysis using the SEPD as a
+tessellated covariate. The densities are computed for the subareas
+formed by the pixels of equal value (see figures ). Such an approach can
+be used if it is believed that the point pattern process is driven by
+the values of the underlying tessellated surface. Here the assumption is
+that areas with high potential power yields which are indicated by high
+SEPD values should exhibit higher wind turbine densities.
+
+\textbf{Hypotheses Part II:}\\
+\(H_{0} - II\): There is no linear correlation between local wind
+turbine densities and the SEPD values.\\
+
+\(Ha_{1} - II\): There is a positive linear correlation between local
+wind turbine densities and the SEPD values.\\
+
+\(Ha_{2} - II\): There is a negative linear correlation between local
+wind turbine densities and the SEPD values.\\
+
+A p-value of a Shapiro-Wilk test greater than 0.05 would imply that the
+distribution of the local wind turbine intensities are not significantly
+different from normal distribution. Since this is not the case the
+Kendall-tau rank correlation is used since it tends to be more robust
+against outliers than the Spearman rank correlation {[}5{]}. The local
+wind tubine intensities are ranked before computing the correlation
+coefficients. The correlation coefficient ranges form -1 to 1 where a
+positive value would indicate that high SEPD are accompanied by high
+wind turbine intensities while a negative value would indicate the
+opposite. The significance of a correlation can assessed by he
+accompanying p-value which should be smaller than 0.05.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#create vector of breaks}
+\NormalTok{breaks }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{6}\NormalTok{,}\DecValTok{7}\NormalTok{)}
+
+\CommentTok{\#compute local intensity using the  SEPD as tessellated covariate}
+\NormalTok{tessellationArnsberg }\OtherTok{\textless{}{-}} \FunctionTok{tess}\NormalTok{(}\AttributeTok{image=}\NormalTok{potentialYieldsArnsbergMasked)  }
+\NormalTok{localDensityArnsberg }\OtherTok{\textless{}{-}} \FunctionTok{quadratcount}\NormalTok{(pppArnsberg, }\AttributeTok{tess=}\NormalTok{tessellationArnsberg)}
+\NormalTok{localDensityArnsberg.dens }\OtherTok{\textless{}{-}} \FunctionTok{intensity}\NormalTok{(localDensityArnsberg) }
+
+\NormalTok{tessellationDetmold }\OtherTok{\textless{}{-}} \FunctionTok{tess}\NormalTok{(}\AttributeTok{image=}\NormalTok{potentialYieldsDetmoldMasked)  }
+\NormalTok{localDensityDetmold }\OtherTok{\textless{}{-}} \FunctionTok{quadratcount}\NormalTok{(pppDetmold, }\AttributeTok{tess=}\NormalTok{tessellationDetmold)  }
+\NormalTok{localDensityDetmold.dens }\OtherTok{\textless{}{-}} \FunctionTok{intensity}\NormalTok{(localDensityDetmold) }
+
+\NormalTok{tessellationKöln }\OtherTok{\textless{}{-}} \FunctionTok{tess}\NormalTok{(}\AttributeTok{image=}\NormalTok{potentialYieldsKölnMasked)  }
+\NormalTok{localDensityKöln }\OtherTok{\textless{}{-}} \FunctionTok{quadratcount}\NormalTok{(pppKöln, }\AttributeTok{tess=}\NormalTok{tessellationKöln) }
+\NormalTok{localDensityKöln.dens }\OtherTok{\textless{}{-}} \FunctionTok{intensity}\NormalTok{(localDensityKöln) }
+
+\NormalTok{tessellationDüsseldorf }\OtherTok{\textless{}{-}} \FunctionTok{tess}\NormalTok{(}\AttributeTok{image=}\NormalTok{potentialYieldsDüsseldorfMasked)  }
+\NormalTok{localDensityDüsseldorf }\OtherTok{\textless{}{-}} \FunctionTok{quadratcount}\NormalTok{(pppDüsseldorf, }\AttributeTok{tess=}\NormalTok{tessellationDüsseldorf)  }
+\NormalTok{localDensityDüsseldorf.dens }\OtherTok{\textless{}{-}} \FunctionTok{intensity}\NormalTok{(localDensityDüsseldorf) }
+
+\NormalTok{tessellationMünster }\OtherTok{\textless{}{-}} \FunctionTok{tess}\NormalTok{(}\AttributeTok{image=}\NormalTok{potentialYieldsMünsterMasked)  }
+\NormalTok{localDensityMünster }\OtherTok{\textless{}{-}} \FunctionTok{quadratcount}\NormalTok{(pppMünster, }\AttributeTok{tess=}\NormalTok{tessellationMünster)  }
+\NormalTok{localDensityMünster.dens }\OtherTok{\textless{}{-}} \FunctionTok{intensity}\NormalTok{(localDensityMünster) }
+
+\CommentTok{\#compute correlation between  SEPD and (ranked) wind turbine intensity}
+\NormalTok{localDensityArnsberg.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(localDensityArnsberg.dens)}
+\NormalTok{localDensityArnsberg.df}\SpecialCharTok{$}\NormalTok{densityRank }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(localDensityArnsberg.df}\SpecialCharTok{$}\NormalTok{Freq, }\AttributeTok{ties.method=} \StringTok{"max"}\NormalTok{)}
+\NormalTok{localDensityArnsberg.cor }\OtherTok{\textless{}{-}}\FunctionTok{cor.test}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(localDensityArnsberg.df}\SpecialCharTok{$}\NormalTok{tile), localDensityArnsberg.df}\SpecialCharTok{$}\NormalTok{densityRank,  }\AttributeTok{method =} \StringTok{"kendall"}\NormalTok{) }
+
+\NormalTok{localDensityDetmold.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(localDensityDetmold.dens)}
+\NormalTok{localDensityDetmold.df}\SpecialCharTok{$}\NormalTok{densityRank }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(localDensityDetmold.df}\SpecialCharTok{$}\NormalTok{Freq, }\AttributeTok{ties.method=} \StringTok{"max"}\NormalTok{)}
+\NormalTok{localDensityDetmold.cor }\OtherTok{\textless{}{-}}\FunctionTok{cor.test}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(localDensityDetmold.df}\SpecialCharTok{$}\NormalTok{tile), localDensityDetmold.df}\SpecialCharTok{$}\NormalTok{densityRank,  }\AttributeTok{method =} \StringTok{"kendall"}\NormalTok{) }
+
+\NormalTok{localDensityKöln.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(localDensityKöln.dens)}
+\NormalTok{localDensityKöln.df}\SpecialCharTok{$}\NormalTok{densityRank }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(localDensityKöln.df}\SpecialCharTok{$}\NormalTok{Freq, }\AttributeTok{ties.method=} \StringTok{"max"}\NormalTok{)}
+\NormalTok{localDensityKöln.cor }\OtherTok{\textless{}{-}}\FunctionTok{cor.test}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(localDensityKöln.df}\SpecialCharTok{$}\NormalTok{tile), localDensityKöln.df}\SpecialCharTok{$}\NormalTok{densityRank,  }\AttributeTok{method =} \StringTok{"kendall"}\NormalTok{) }
+
+\NormalTok{localDensityDüsseldorf.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(localDensityDüsseldorf.dens)}
+\NormalTok{localDensityDüsseldorf.df}\SpecialCharTok{$}\NormalTok{densityRank }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(localDensityDüsseldorf.df}\SpecialCharTok{$}\NormalTok{Freq, }\AttributeTok{ties.method=} \StringTok{"max"}\NormalTok{)}
+\NormalTok{localDensityDüsseldorf.cor }\OtherTok{\textless{}{-}}\FunctionTok{cor.test}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(localDensityDüsseldorf.df}\SpecialCharTok{$}\NormalTok{tile), localDensityDüsseldorf.df}\SpecialCharTok{$}\NormalTok{densityRank,  }\AttributeTok{method =} \StringTok{"kendall"}\NormalTok{) }
+
+\NormalTok{localDensityMünster.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(localDensityMünster.dens)}
+\NormalTok{localDensityMünster.df}\SpecialCharTok{$}\NormalTok{densityRank }\OtherTok{\textless{}{-}} \FunctionTok{rank}\NormalTok{(localDensityMünster.df}\SpecialCharTok{$}\NormalTok{Freq, }\AttributeTok{ties.method=} \StringTok{"max"}\NormalTok{)}
+\NormalTok{localDensityMünster.cor }\OtherTok{\textless{}{-}}\FunctionTok{cor.test}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(localDensityMünster.df}\SpecialCharTok{$}\NormalTok{tile), localDensityMünster.df}\SpecialCharTok{$}\NormalTok{densityRank,  }\AttributeTok{method =} \StringTok{"kendall"}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-1}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-2}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-3}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-4}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-5}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-6}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-7}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-8}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-9}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotYields-10}
+
+\begin{verbatim}
+## 
+##  Kendall's rank correlation tau
+## 
+## data:  as.numeric(localDensityArnsberg.df$tile) and localDensityArnsberg.df$densityRank
+## z = 1.5681, p-value = 0.1169
+## alternative hypothesis: true tau is not equal to 0
+## sample estimates:
+##       tau 
+## 0.5143445
+\end{verbatim}
+
+\begin{verbatim}
+## 
+##  Kendall's rank correlation tau
+## 
+## data:  as.numeric(localDensityDetmold.df$tile) and localDensityDetmold.df$densityRank
+## z = 2.7344, p-value = 0.006249
+## alternative hypothesis: true tau is not equal to 0
+## sample estimates:
+##       tau 
+## 0.8783101
+\end{verbatim}
+
+\begin{verbatim}
+## 
+##  Kendall's rank correlation tau
+## 
+## data:  as.numeric(localDensityKöln.df$tile) and localDensityKöln.df$densityRank
+## z = 1.5681, p-value = 0.1169
+## alternative hypothesis: true tau is not equal to 0
+## sample estimates:
+##       tau 
+## 0.5143445
+\end{verbatim}
+
+\begin{verbatim}
+## 
+##  Kendall's rank correlation tau
+## 
+## data:  as.numeric(localDensityDüsseldorf.df$tile) and localDensityDüsseldorf.df$densityRank
+## z = 1.2081, p-value = 0.227
+## alternative hypothesis: true tau is not equal to 0
+## sample estimates:
+##       tau 
+## 0.4472136
+\end{verbatim}
+
+\begin{verbatim}
+## 
+##  Kendall's rank correlation tau
+## 
+## data:  as.numeric(localDensityMünster.df$tile) and localDensityMünster.df$densityRank
+## z = 1.1476, p-value = 0.2511
+## alternative hypothesis: true tau is not equal to 0
+## sample estimates:
+##       tau 
+## 0.4140393
+\end{verbatim}
+
+\hypertarget{part-iii---intensity-as-function-of-covariate}{%
+\subsubsection{Part III - Intensity as function of
+covariate}\label{part-iii---intensity-as-function-of-covariate}}
+
+Intensities of a point processes can be modeled using Poisson point
+processes. Additionally a covariate can be introduced if the assumption
+is made that the point process is driven or at least influenced by the
+covariate {[}2{]}. To evaluate the quality of the resulting model a
+Poisson point process model is fitted without an additional covariate.
+
+\textbf{Hypotheses Part III:}\\
+\(H_{0} - III\): The wind turbine point pattern is not depended on the
+SEPD.\\
+
+\(Ha - III\): The wind turbine point pattern is depended on the SEPD.\\
+
+The comparison between the models is carried out using the likelihood
+ratio test. The p-value (\(Pr(>Chi)\)) of such a test is interpreted as
+the probability of being wrong in rejecting the \(H_{0}\) {[}2{]}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{covariantArnsberg }\OtherTok{\textless{}{-}} \FunctionTok{as.im.RasterLayer}\NormalTok{(potentialYieldsArnsbergMasked)}
+\NormalTok{ppmArnsbergCov }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppArnsberg }\SpecialCharTok{\textasciitilde{}}\NormalTok{ covariantArnsberg, }\AttributeTok{data=}\FunctionTok{c}\NormalTok{(tessellationArnsberg))}
+\NormalTok{ppmArnsberg }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppArnsberg }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{)}
+\NormalTok{ppmArnsbergPred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(ppmArnsbergCov)}
+
+\NormalTok{covariantDetmold }\OtherTok{\textless{}{-}} \FunctionTok{as.im.RasterLayer}\NormalTok{(potentialYieldsDetmoldMasked)}
+\NormalTok{ppmDetmoldCov }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppDetmold }\SpecialCharTok{\textasciitilde{}}\NormalTok{ covariantDetmold, }\AttributeTok{data=}\FunctionTok{c}\NormalTok{(tessellationDetmold))}
+\NormalTok{ppmDetmold }\OtherTok{\textless{}{-}}\FunctionTok{ppm}\NormalTok{(pppDetmold }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{)}
+\NormalTok{ppmDetmoldPred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(ppmDetmoldCov)}
+
+\NormalTok{covariantKöln }\OtherTok{\textless{}{-}} \FunctionTok{as.im.RasterLayer}\NormalTok{(potentialYieldsKölnMasked)}
+\NormalTok{ppmKölnCov }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppKöln }\SpecialCharTok{\textasciitilde{}}\NormalTok{ covariantKöln, }\AttributeTok{data=}\FunctionTok{c}\NormalTok{(tessellationKöln))}
+\NormalTok{ppmKöln }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppKöln }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{)}
+\NormalTok{ppmKölnPred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(ppmKölnCov)}
+
+\NormalTok{covariantDüsseldorf }\OtherTok{\textless{}{-}} \FunctionTok{as.im.RasterLayer}\NormalTok{(potentialYieldsDüsseldorfMasked, )}
+\NormalTok{ppmDüsseldorfCov }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppDüsseldorf }\SpecialCharTok{\textasciitilde{}}\NormalTok{ covariantDüsseldorf, }\AttributeTok{data=}\FunctionTok{c}\NormalTok{(tessellationDüsseldorf))}
+\NormalTok{ppmDüsseldorf }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppDüsseldorf }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{)}
+\NormalTok{ppmDüsseldorfPred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(ppmDüsseldorfCov)}
+
+\NormalTok{covariantMünster }\OtherTok{\textless{}{-}} \FunctionTok{as.im.RasterLayer}\NormalTok{(potentialYieldsMünsterMasked)}
+\NormalTok{ppmMünsterCov }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppMünster }\SpecialCharTok{\textasciitilde{}}\NormalTok{ covariantMünster, }\AttributeTok{data=}\FunctionTok{c}\NormalTok{(tessellationMünster))}
+\NormalTok{ppmMünster }\OtherTok{\textless{}{-}} \FunctionTok{ppm}\NormalTok{(pppMünster }\SpecialCharTok{\textasciitilde{}} \DecValTok{1}\NormalTok{)}
+\NormalTok{ppmMünsterPred }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(ppmMünsterCov)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-1}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-2}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-3}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-4}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-5}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-6}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-7}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-8}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-9}
+\includegraphics[width=0.5\linewidth]{Final-Assignment-Analysis-of-Spatiotemporal-Data-Alexander-Pilz_files/figure-latex/plotIntensityFunction-10}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{anova}\NormalTok{(ppmArnsberg, ppmArnsbergCov, }\AttributeTok{test=}\StringTok{"LR"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table
+## 
+## Model 1: ~1   Poisson
+## Model 2: ~covariantArnsberg   Poisson
+##   Npar Df Deviance  Pr(>Chi)    
+## 1    1                          
+## 2    2  1   920.11 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{anova}\NormalTok{(ppmDetmold, ppmDetmoldCov, }\AttributeTok{test=}\StringTok{"LR"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table
+## 
+## Model 1: ~1   Poisson
+## Model 2: ~covariantDetmold    Poisson
+##   Npar Df Deviance  Pr(>Chi)    
+## 1    1                          
+## 2    2  1   1486.5 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{anova}\NormalTok{(ppmKöln, ppmKölnCov, }\AttributeTok{test=}\StringTok{"LR"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table
+## 
+## Model 1: ~1   Poisson
+## Model 2: ~covariantKöln   Poisson
+##   Npar Df Deviance  Pr(>Chi)    
+## 1    1                          
+## 2    2  1   365.89 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{anova}\NormalTok{(ppmDüsseldorf, ppmDüsseldorfCov, }\AttributeTok{test=}\StringTok{"LR"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table
+## 
+## Model 1: ~1   Poisson
+## Model 2: ~covariantDüsseldorf     Poisson
+##   Npar Df Deviance  Pr(>Chi)    
+## 1    1                          
+## 2    2  1   116.21 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{anova}\NormalTok{(ppmMünster, ppmMünsterCov, }\AttributeTok{test=}\StringTok{"LR"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Deviance Table
+## 
+## Model 1: ~1   Poisson
+## Model 2: ~covariantMünster    Poisson
+##   Npar Df Deviance  Pr(>Chi)    
+## 1    1                          
+## 2    2  1   116.11 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\hypertarget{results}{%
+\subsection{Results}\label{results}}
+
+\hypertarget{part-i}{%
+\subsubsection{Part I}\label{part-i}}
+
+The highest wind turbine counts are found in the precincst of Münster
+and Detmold with 1067 and 1002 wind turbines respectively. The precincts
+of Köln and Arnsberg share similar wind turbine counts, 678 for the
+former and 633 for the latter. The lowest turbine counts is obsersved in
+the Düsseldorf precinct. The wind turbine densities per km² follow a
+similar pattern where the precincts of Detmold and Köln exhibit values
+around 0.15 wind turbines per km². Here the Köln precinct exhibits a
+slightly higher wind turbine densities per km², 0.09, as the precincts
+of Arnsberg and Düsseldorf which share a wind turbine densities per km²
+0f 0.07 (See figures 4, 5). A purely visual inspection of the spatial
+distributions and densities of the wind turbines in the precincts of NRW
+suggests that the underlying point process might be clustered (See
+Figures 6 to 16). This is confirmed by the \(G\)-, \(F\)-, and
+\(J\)-functions. The \(\hat{G}_{obs}(r)\) functions lie above the lower
+simulation envelope of the \({G}_{theo}(r)\) functions for most of their
+range (See figures 16-20). The opposite can be observed with the the
+\(\hat{F}_{obs}(r)\) functions. These lie below the respective
+simulation envelope of \({F}_{theo}(r)\) function for the major part of
+their range (See figures 21-25). The \(\hat{J}_{obs}(r)\) functions
+exhibit values \textless{} 1 for the majority of their range thus
+Conforming the results from the \(G\)- and \(F\)-functions (See figures
+26-30). Based on the results of the \(G\)-, \(F\)-, and \(J\)-functions
+the \(H_{0} - I\) is rejected. Based on the properties described in
+Methods Part I \(Ha_{2} - I\) is accepted thus reaching the conclusion
+that the wind turbine point process in NRW exhibits a clustered pattern.
+
+\hypertarget{part-ii}{%
+\subsubsection{Part II}\label{part-ii}}
+
+A purely visual inspection of local intensity analysis hints towards a
+possible positive correlation between the local wind turbine intensity
+and the SEPD. It has to mentioned that the wind turbine densities
+extreme of the SEPD mostly yielded local wind turbine intensities of 0.
+The Kendalls-tau correlation coefficients, with the exception of the
+Detmold precinct, do not yield a significant correlation between the
+local wind turbine intensity and the SEPD. The computed values for
+Kendalls-tau are nonetheless positive for all precincts. It is of note
+that the values for Kendalls-tau are significant and close to 1 when the
+aforementioned extreme SEPD values are omitted during computation. The
+\(H_{0} - II\) can only be rejected for the precinct of Detmold due to
+the otherwise unsatisfactory p-values which leads to the conclusion that
+there is no significant linear correlation between the local wind
+turbine intensity and the SEPD in the precincts of Arnsberg, Köln,
+Düsseldorf and Münster. For the precinct of Detmold \(Ha_{1} - II\) is
+accepted.
+
+\hypertarget{part-iii}{%
+\subsubsection{Part III}\label{part-iii}}
+
+Despite of the unsatisfactory levels of significance it was attempted to
+model the wind turbine density as a function of the SPED. The resulting
+Poisson pint process using the SPED as a covariant was compared to
+another Poisson point process which was fitted to the wind turbine point
+pattern only. The comparison was carried out using likelihood ratio
+tests. These yielded very low p-values (\(Pr(>Chi)\)). This leads to to
+the rejection of \(H_{0} - III\) and the acceptance of \(H_a - III\).
+This however is not an indication that the SEPD is the only variable
+influencing the wind turbine point process.
+
+\hypertarget{discussion}{%
+\subsection{Discussion}\label{discussion}}
+
+The presented analysis could prove that the point process formed by the
+wind turbines in the precincts of NRW is clustered. This seems not
+surprising given that wind turbines tend to aggregated together in wind
+parks and are rarely build individually. The analysis of the local wind
+turbine intensities and their correlation with the underlying SEPD
+values could disprove the existence of a significant linear correlation
+between them in all precincts of NRW. Further studies could employ
+different measures and methods to identify other a possible correlations
+between the two since positive though insignificant correlation
+coefficients could be seen as an indication that some relation between
+the two exists. The fitting of Poisson point processes to the wind
+turbine point pattern and the SEPD as a covariate and their subsequent
+comparison could prove that the wind turbine point pattern is depended
+on the SEPD though the degree of this dependence could not be determined
+although it seems highly unlikely that the SEPD is the only factor
+influencing the disclosure of areas which are to be used for the power
+generation by means of wind energy by the planning authorities. Future
+attempts at modelling the underlying Poisson point processes of the wind
+turbine point pattern should therefore take additional Variables like
+regulatory constraints like the distance to residential areas,
+environmental variables like the SPED in other available height levels
+or the relief into account. It could also be worth while to conduct
+comparative studies with different processes for modelling the wind
+turbine point process like Cox processes {[}3{]}.
+
+\hypertarget{sources}{%
+\subsection{Sources}\label{sources}}
+
+{[}1{]} J.Illian, A. Penttinen, H. Stoyan and D. Stoyan, Statistical
+Analysis and Modelling of Spatial Point Patterns, 1st edition
+Chichester: John Wiley \& Sons Ltd., 2008
+
+{[}2{]} A. Baddeley, E. Rubak, R. Turner, Spatial Point Patterns
+Methodology and Applications with R, 1st edition Boca Raton: Taylor \&
+Francis Group, LLC, 2016
+
+{[}3{]} P. J. Diggle, Statistical Analysis of Spatial and
+Spatio-Temporal Point Patterns, 3rd edition Boca Raton: Taylor \&
+Francis Group, LLC, 2014
+
+{[}4{]} R. S. Bivand, E. Pebesma, V. Gómez-Rubio, Applied Spatial Data
+Analysis with R, 2nd edition New York: Springer Science+Business Media
+2013
+
+{[}5{]} C. Reimann, P. Filzmoser, R. G. Garrett, R. Dutter, Statistical
+Data Analysis Explained Applied Environmental Statistics with R, 1st
+edition Chichester: John Wiley \& Sons Ltd., 2008
+
+{[}6{]} P.J. Diggle, Statistical analysis of spatial point patterns, 2nd
+edition Dortmund: Arnold, 2003
+
+{[}7{]} Landesamt für Natur, Umwelt und Verbraucherschutz
+Nordrhein-Westfalen (LANUV), Potenzialstudie Windenergie NRW
+LANUV-Fachbericht 124 {[}Online{]}, Available at:
+\url{https://www.lanuv.nrw.de/fileadmin/lanuvpubl/3_fachberichte/Potenzialstudie-Windenergie-NRW.pdf}
+(Last accessed on: 03. March 2023)
+
+{[}8{]} Bundestag der Bundesrepublik Deustchland, Gesetz zur Erhöhung
+und Beschleunigung des Ausbaus von Windenergieanlagen an Land
+{[}Online{]}, Available at:
+\url{https://www.bgbl.de/xaver/bgbl/start.xav\#__bgbl__\%2F\%2F*\%5B\%40attr_id\%3D\%27bgbl122s1353.pdf\%27\%5D__1678185292530}
+(Last accessed on: 03. March 2023)
+
+{[}9{]} Bundestag der Bundesrepublik Deustchland, Raumordnungsgesetz
+{[}Online{]}, Available at:
+\url{https://www.gesetze-im-internet.de/rog_2008/ROG.pdf} (Last accessed
+on: 03. March 2023)
+
+{[}10{]} Landesregierung Nordrhein-Westfalen, Landesplanungsgesetz
+Nordrhein-Westfalen {[}Online{]}, Available at:
+\url{https://recht.nrw.de/lmi/owa/br_text_anzeigen?v_id=920070925160557909}
+(Last accessed on: 03. March 2023)
+
+\end{document}
