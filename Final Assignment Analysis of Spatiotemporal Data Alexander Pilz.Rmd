@@ -1,7 +1,7 @@
 ---
 title: "Final Assignment Analysis of Spatiotemporal Data"
 author: "Alexander Pilz"
-date: "2023-01-30"
+date: "2023-03-08"
 output:
   html_document:
     toc: yes
@@ -24,14 +24,13 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-In July 2022, the German government formulated the "Act to Increase and Accelerate the Expansion of Onshore Wind Energy Facilities" which underscores the goal of increasing the use of renewable energy sources in Germany. The law stipulates that 1.8% of the area of the federal state of North Rhine-Westphalia (NRW) must be used for power generation from wind energy [8].
-The power yields of such facilities are depended on a multitude of factors. One would argue that wind turbines should build where their potential energy yields are the highest. The planning and execution of construction efforts is the task of multiple administrative units. The federal state (Land NRW) and precincts (Bezirke) identify and disclose areas which are to be used for the power generation by means of wind energy in the federal state development plan (Landesentwicklungsplan) and the derivative regional plans (Regionalpläne). Some of the planning steps involved are subject to personal considerations. The counties (Kreise) are only responsible for the planning and subsequent construction of the actual wind parks. Thus the point pattern analysis is conducted on precinct level [9][10]. Instead of concerning itself with future planning practices the following point pattern analysis, conducted during the seminar Analysis of Spatio temporal data in 2022/23, tries to find and describe a possible relation between the point pattern formed by existing wind turbines in NRW and the environmental Variable of the specific energy power density. This in turn could shed some light on the driving factors which created the existing point pattern. Results such studies could be used to identify shortcomings of decision making processes and might be helpful for their optimization. 
+In July 2022, the German government formulated the "Act to Increase and Accelerate the Expansion of Onshore Wind Energy Facilities" which underscores the goal of increasing the use of renewable energy sources in Germany. The law stipulates that 1.8% of the area of the federal state of North Rhine-Westphalia (NRW) must be used for power generation from wind energy [8]. The power yields of such facilities are depended on a multitude of factors. It could be argued that wind turbines should build where their potential energy yields are the highest. The planning and execution of construction efforts is the task of multiple administrative units. The federal state (Land NRW) and precincts (Bezirke) identify and disclose areas which are to be used for the power generation by means of wind energy in the federal state development plan (Landesentwicklungsplan) and the derivative regional plans (Regionalpläne). Some of the planning steps involved are subject to personal considerations. The counties (Kreise) are only responsible for the planning and subsequent construction of the actual wind parks. Thus the point pattern analysis is conducted on precinct level [9][10]. Instead of concerning itself with future planning practices the following point pattern analysis, conducted during the seminar Analysis of spatiotemporal data in 2022/23, tries to find and describe a possible relationship between the point pattern formed by existing wind turbines in NRW and the environmental Variable of the specific energy power density. Results such studies could be used to identify shortcomings of decision making processes and might be helpful for their optimization. In the first part of this analysis is used to conduct a preliminary examination of the datasets used. The mandatory test for Complete spatial randomness is also part of this preliminary examination. The second part tries to establish a possible correlation between the local wind turbine intensities using the SEPD as a tessellated surface and the values of the SEPD. The third part attempts to model the wind turbine point process using the SEPD as a covariate.
 
 ## Data
 
 The datasets employed during this point pattern analysis are all available openly and free of charge at the GEOportal.NRW.
 The employed coordinate reference system of all datasets is ETRS89 / UTM zone 32N commonly used for official and cadastral data in NRW.
-The analysis itself was carried out using the programming language R and the packages sf, raster, spatstat, plyr, maptools and their dependencies.
+The analysis itself was carried out using the programming language R and the packages sf, raster, spatstat, plyr, maptools, ggplot2 and their dependencies.
 
 ```{r importLibraries, echo=TRUE}
 #import libraries
@@ -40,9 +39,13 @@ library(raster)
 library(spatstat)
 library(plyr)
 library(maptools)
+library(ggplot2)
+
+#set working directory
+setwd(getwd())
 ```
 
-The dataset containing polygonal features of the precincts of the federal state of NRW lists five precincts namely Arnsberg, Detmold, Köln, Düsseldorf and Münster (see Figure 1).
+The dataset containing polygonal features of the precincts of the federal state of NRW, lists five precincts namely Arnsberg, Detmold, Köln, Düsseldorf and Münster (see figure 1).
 
 ```{r summarizePrecincts, echo=TRUE, fig.height=8, fig.width=8}
 #import precincts
@@ -58,7 +61,7 @@ text(precinctsCentroids, labels = precincts$GN, col = "blue")
 ```
 
 The point pattern to be examined represents the existing wind turbines in NRW.
-The Shapefile contains 3797 point features with 12 attribute fields which contain information about the wind turbine like the diameter of its rotor, the year of its commissioning and the administrative unit in which they are situated (see Figure 2).
+The Shapefile contains 3797 point features with 12 attribute fields which contain information about the wind turbine like the diameter of its rotor, the year of its commissioning and the administrative unit in which they are situated (see figure 2).
 
 ```{r summarizeTurbines, echo=TRUE}
 #import wind turbines
@@ -76,7 +79,7 @@ The data is available in different height levels above ground.
 Here the data corresponding to a height of 100 meters is used.
 The SEPD, ranging from 0 to 7, is a measure of the power of the wind flowing through an area.
 It indicates how much power (in watts) is converted per square meter of rotor area.
-The SEPD can be seen as an indicator for the suitability of a site for wind energy use (see Figure 3)[7].
+The SEPD can be seen as an indicator for the suitability of a site for wind energy use (see figure 3)[7].
 
 ```{r summarizeYields, echo=TRUE, fig.height=8, fig.width=8}
 #import potential yields
@@ -91,15 +94,15 @@ plot(potentialYields, main = "Figure 3 -  SEPD of NRW" )
 
 ## Methods
 
-### Part I - Preliminary analysis and testing
+### Part I - Preliminary analysis
 
 In order to get an overview of the data the wind turbine counts and global intensities for each precinct are computed and visualized.
-When computing the global intensities from the wind turbine point pattern the smoothing kernel bandwidth $sigma$ is chosen using a method described in [6].
+When computing the global intensities from the wind turbine point pattern, the smoothing kernel bandwidth $sigma$ is chosen using a method described in [6].
 Also Jones-Diggle improved edge corrections are applied.
 Before analyzing the point pattern formed by the wind turbines in the precincts of NRW some preliminary tests are performed.
 These encompass tests for complete spatial randomness.
 The rejection of this is according to [3] "is a minimal prerequisite to any serious attempt to model an observed pattern" [3].
-Therefore the empirical Functions are compared to a theoretical function which corresponds to a homogeneous poisson point process which is conforms to complete spatial randomness [2].
+Therefore the empirical functions are compared to a theoretical function which corresponds to a homogeneous poisson point process which is conforms to complete spatial randomness [2].
 
 **Hypotheses Part I:**\
 $H_{0} - I$: The wind turbines of NRW are distributed independently at random and uniformly in each precinct.\
@@ -112,15 +115,15 @@ To confirm or reject these hypotheses the $G$-, $F$-, and $J$-functions were app
 When computing the $G$-, $F$-, and $J$-functions the best edge correction method is chosen automatically.
 The Monte-Carlo envelopes are computed simulating 99 point processes.
 The $G$-function, also called the nearest-neighbour distance distribution function [2], "measures the distribution of the distances from an arbitrary event to its nearest event" [4].
-In order assess the compatibility of the wind turbine point pattern with complete spatial randomness the empirical function $\hat{G}_{obs}$ is plotted against the theoretical function $(r)G_{theo}(r)$, thus the expectation under complete spatial randomness, and its Monte Carlo envelope indicated by $\hat{G}_{hi}(r)$ and $\hat{G}_{lo}(r)$ [4] for each precinct (see figures ).
+In order assess the compatibility of the wind turbine point pattern with complete spatial randomness the empirical function $\hat{G}_{obs}$ is plotted against the theoretical function $(r)G_{theo}(r)$, thus the expectation under complete spatial randomness, and its Monte Carlo envelope indicated by $\hat{G}_{hi}(r)$ and $\hat{G}_{lo}(r)$ [4] for each precinct.
 Complete spatial randomness would be accepted for a given point process if the $\hat{G}_{obs}(r)$ function runs close to the $G_{theo}(r)$ function or within its Monte Carlo envelope.
 A clustered pattern would be indicated if the empirical function $\hat{G}_{obs}(r)$ runs above the $G_{theo}(r)$ and its Monte Carlo envelope. Similarly a $\hat{G}_{obs}(r)$ function which runs below the $G_{theo}(r)$ and its Monte Carlo envelope would indicate a regular pattern [2][4].
 
 The $F$-function, also called the empty-space function [2], "measures the distribution of all distances from an arbitrary point of the plane to its nearest event" [4].
-Assessment of its results is done in a similar way as with the G-function by plotting empirical function $\hat{F}_{obs}(r)$ against the theoretical function $F_{theo}(r)$ and its Monte Carlo envelope indicated by $\hat{F}_{hi}(r)$ and $\hat{F}_{lo}(r)$ [4] (see figures ). One would accept complete spatial randomness for the $F$-function under the same conditions as for the $G$-function.
+Assessment of its results is done in a similar way as with the G-function by plotting empirical function $\hat{F}_{obs}(r)$ against the theoretical function $F_{theo}(r)$ and its Monte Carlo envelope indicated by $\hat{F}_{hi}(r)$ and $\hat{F}_{lo}(r)$ [4]. One would accept complete spatial randomness for the $F$-function under the same conditions as for the $G$-function.
 Regarding the indication of regular or clustered patterns, the reverse conditions as with the $G$-function must be applied [2][4].\
 
-The $J$-function is a combination of the $G$- and $F$-function [2]. Assessment is again done by plotting the empirical function $\hat{J}_{obs}(r)$ against the theoretical function $J_{theo}(r)$ and its Monte Carlo envelope indicated by $\hat{J}_{hi}(r)$ and $\hat{J}_{lo}(r)$ (see figures ). The interpretation of the $J$-function can be more complex than with the $G$- and $F$-functions since it can also be used for "characterizing the interaction of points in terms of its type, strength and range". Clustered and regular patters are nonetheless indicated by the $J$-function as well where values below 1 would indicate the former and values above 1 the latter [1].
+The $J$-function is a combination of the $G$- and $F$-functions [2]. Assessment is again done by plotting the empirical function $\hat{J}_{obs}(r)$ against the theoretical function $J_{theo}(r)$ and its Monte Carlo envelope indicated by $\hat{J}_{hi}(r)$ and $\hat{J}_{lo}(r)$. The interpretation of the $J$-function can be more complex than with the $G$- and $F$-functions since it can also be used for "characterizing the interaction of points in terms of its type, strength and range". Clustered and regular patters are nonetheless indicated by the $J$-function as well where values below 1 would indicate the former and values above 1 the latter [1].
 
 ```{r subsetWindTurbines, echo=TRUE}
 #create subset of wind turbines for each precinct
@@ -157,7 +160,7 @@ precintAreas <- c(as.numeric(st_area(precincts[precincts$GN == "Arnsberg",]))/10
 
 #create dataframe with precinct names, areas, wind turbine counts and densities
 precinctDf <- data.frame(precintNames, precintAreas, windTurbineCounts, windTurbineDensities)
-colnames(precinctDf) <- c('Precinct','Area in km²','Turbine count', 'Turbine density')
+colnames(precinctDf) <- c('Precinct','Area in km²','Turbine count', 'Turbine density per km²')
 
 #compute densities of wind turbines for each precinct
 densityArnsberg <- density(pppArnsberg, sigma = bw.diggle, diggle = TRUE, edge = TRUE)
@@ -176,31 +179,31 @@ par(mar=c(1, 1, 1, 1))
 plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), main = "Figure 6 - Wind turbines - Arnsberg" )
 plot(st_geometry(windTurbinesArnsberg), pch = 3, col = 'red', add = TRUE)
 
-plot(densityArnsberg, main = "Figure 7 - Wind turbine density - Arnsberg", box=FALSE)
+plot(densityArnsberg, main = "Figure 7 - Wind turbine intensity - Arnsberg", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Arnsberg",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Detmold",]), main = "Figure 8 - Wind turbines - Detmold" )
 plot(st_geometry(windTurbinesDetmold), pch = 3, col = 'red', add = TRUE)
 
-plot(densityDetmold, main = "Figure 9 - Wind turbine density - Detmold", box=FALSE)
+plot(densityDetmold, main = "Figure 9 - Wind turbine intensity - Detmold", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Detmold",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Köln",]), main = "Figure 10 - Wind turbines - Köln" )
 plot(st_geometry(windTurbinesKöln), pch = 3, col = 'red', add = TRUE)
 
-plot(densityKöln, main = "Figure 11 - Wind turbine density - Köln", box=FALSE)
+plot(densityKöln, main = "Figure 11 - Wind turbine intensity - Köln", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Köln",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), main = "Figure 12 - Wind turbines - Düsseldorf" )
 plot(st_geometry(windTurbinesDüsseldorf), pch = 3, col = 'red', add = TRUE)
 
-plot(densityDüsseldorf, main = "Figure 13 - Wind turbine density - Düsseldorf", box=FALSE)
+plot(densityDüsseldorf, main = "Figure 13 - Wind turbine intensity - Düsseldorf", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Düsseldorf",]), add=TRUE)
 
 plot(st_geometry(precincts[precincts$GN == "Münster",]), main = "Figure 14 - Wind turbines of Münster precinct" )
 plot(st_geometry(windTurbinesMünster), pch = 3, col = 'red', add = TRUE)
 
-plot(densityMünster, main = "Figure 15 - Wind turbine density - Münster", box=FALSE)
+plot(densityMünster, main = "Figure 15 - Wind turbine intensity - Münster", box=FALSE)
 plot(st_geometry(precincts[precincts$GN == "Münster",]), add=TRUE)
 ```
 
@@ -258,10 +261,10 @@ plot(jEnvDüsseldorf, main = "Figure 29 - J-function - Düsseldorf", ylim=c(0,12
 plot(jEnvMünster, main = "Figure 30 - J-function - Münster", ylim=c(0,12))
 ```
 
-### Part II - Local intensity
+### Part II - Local intentity with tessellated covariat
 
 A firsts step towards finding and understanding a possible relationship between a point pattern and corresponding values of an underlying variable could be a local density analysis using the SEPD as a tessellated covariate.
-The densities are computed for the subareas formed by the pixels of equal value (see figures ).
+The intensities are computed for the subareas formed by the pixels of equal value. A linear model can also be fitted to the intensities in relation to the covariate.
 Such an approach can be used if it is believed that the point pattern process is driven by the values of the underlying tessellated surface. Here the assumption is that areas with high potential power yields which are indicated by high SEPD values should exhibit higher wind turbine densities.
 
 **Hypotheses Part II:**\
@@ -271,10 +274,10 @@ $Ha_{1} - II$: There is a positive linear correlation between local wind turbine
 
 $Ha_{2} - II$: There is a negative linear correlation between local wind turbine densities and the SEPD values.\
 
-A p-value of a Shapiro-Wilk test greater than 0.05 would imply that the distribution of the local wind turbine intensities are not significantly different from normal distribution. Since this is not the case the Kendall-tau rank correlation is used since it tends to be more robust against outliers than the Spearman rank correlation [5]. The local wind tubine intensities are ranked before computing the correlation coefficients. The correlation coefficient ranges form -1 to 1 where a positive value would indicate that high SEPD are accompanied by high wind turbine intensities while a negative value would indicate the opposite. The significance of a correlation can assessed by he accompanying p-value which should be smaller than 0.05.
+The trend of the linear model can also be fitted to the intensities in relation to the covariate can be used as a first indication for a possible correlation between the two. The Kendall-tau rank correlation is used to compute the correlation coefficients since not all series are normally distributed according to the Shapiro-Wilk test and it tends to be more robust against outliers than the Spearman rank correlation [5]. The local wind turbine intensities are ranked before computing the correlation coefficients. The correlation coefficient ranges form -1 to 1, where a positive value would indicate that high SEPD are accompanied by high wind turbine intensities while a negative value would indicate the opposite. The significance of a correlation can assessed by the accompanying p-value which should be smaller than 0.05.
 
 ```{r cropYields, echo=FALSE, fig.show='hold', out.width='50%', message=FALSE, warning=FALSE}
-#crop  SEPD to extend of the precincts
+#crop SEPD to extend of the precincts
 potentialYieldsArnsbergCropped <- crop(potentialYields, precincts[precincts$GN == "Arnsberg",])
 potentialYieldsArnsbergMasked <- mask(potentialYieldsArnsbergCropped, precincts[precincts$GN == "Arnsberg",])
 
@@ -338,26 +341,26 @@ localDensityMünster.df$densityRank <- rank(localDensityMünster.df$Freq, ties.m
 localDensityMünster.cor <-cor.test(as.numeric(localDensityMünster.df$tile), localDensityMünster.df$densityRank,  method = "kendall") 
 ```
 
-```{r plotYields, echo=FALSE, fig.height=8, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
+```{r plotYields, echo=FALSE, fig.width=8,  fig.height=8, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
 plot(potentialYieldsArnsbergMasked, main = "Figure 31 - SPED & wind turbines - Arnsberg", zlim = c(1, 7))
 plot(st_geometry(windTurbinesArnsberg), pch = 3, col = 'black', add = TRUE)
-barplot(localDensityArnsberg.dens, main = "Figure 32 - Local wind turbine densities - Arnsberg", xlab = "SEPD", ylab = "Local wind turbine density")
+ggplot(localDensityArnsberg.df, aes(x=as.numeric(tile), y=Freq)) + geom_point(color='red', size = 6, shape = 20) + geom_smooth(method=lm, color='blue', level=0.95) + theme_bw() + xlab("SEPD") + ylab("Local wind turbine density") +  ggtitle("Figure 32 - Linear model fitted to local wind turbine densities and SEPD - Arnsberg") + scale_x_continuous(breaks = seq(1, 7, by = 1))
 
 plot(potentialYieldsDetmoldMasked, main = "Figure 33 - SPED & wind turbines - Detmold", zlim = c(1, 7))
 plot(st_geometry(windTurbinesDetmold), pch = 3, col = 'black', add = TRUE)
-barplot(localDensityDetmold.dens, main = "Figure 34 - Local wind turbine densities - Detmold", xlab = "SEPD", ylab = "Local wind turbine density")
+ggplot(localDensityDetmold.df, aes(x=as.numeric(tile), y=Freq)) + geom_point(color='red', size = 6, shape = 20) + geom_smooth(method=lm, color='blue', level=0.95) + theme_bw() + xlab("SEPD") + ylab("Local wind turbine density") +  ggtitle("Figure 34 - Linear model fitted to local wind turbine densities and SEPD - Detmold") + scale_x_continuous(breaks = seq(1, 7, by = 1))
 
 plot(potentialYieldsKölnMasked, main = "Figure 35 - SPED & wind turbines - Köln", zlim = c(1, 7))
 plot(st_geometry(windTurbinesKöln), pch = 3, col = 'black', add = TRUE)
-barplot(localDensityKöln.dens, main = "Figure 36 - Local wind turbine densities - Köln", xlab = "SEPD", ylab = "Local wind turbine density")
+ggplot(localDensityKöln.df, aes(x=as.numeric(tile), y=Freq)) + geom_point(color='red', size = 6, shape = 20) + geom_smooth(method=lm, color='blue', level=0.95) + theme_bw() + xlab("SEPD") + ylab("Local wind turbine density") +  ggtitle("Figure 36 - Linear model fitted to local wind turbine densities and SEPD - Köln") + scale_x_continuous(breaks = seq(1, 7, by = 1))
 
 plot(potentialYieldsDüsseldorfMasked, main = "Figure 37 - SPED & wind turbines - Düsseldorf", zlim = c(1, 7))
 plot(st_geometry(windTurbinesDüsseldorf), pch = 3, col = 'black', add = TRUE)
-barplot(localDensityDüsseldorf.dens, main = "Figure 38 - Local wind turbine densities - Düsseldorf", xlab = "SEPD", ylab = "Local wind turbine density")
+ggplot(localDensityDüsseldorf.df, aes(x=as.numeric(tile), y=Freq)) + geom_point(color='red', size = 6, shape = 20) + geom_smooth(method=lm, color='blue', level=0.95) + theme_bw() + xlab("SEPD") + ylab("Local wind turbine density") +  ggtitle("Figure 38 - Linear model fitted to local wind turbine densities and SEPD - Düsseldorf") + scale_x_continuous(breaks = seq(1, 7, by = 1))
 
 plot(potentialYieldsMünsterMasked, main = "Figure 39 - SPED & wind turbines - Münster", zlim = c(1, 7))
 plot(st_geometry(windTurbinesMünster), pch = 3, col = 'black', add = TRUE)
-barplot(localDensityMünster.dens, main = "Figure 40 - Local wind turbine densities - Münster", xlab = "SEPD", ylab = "Local wind turbine density")
+ggplot(localDensityMünster.df, aes(x=as.numeric(tile), y=Freq)) + geom_point(color='red', size = 6, shape = 20) + geom_smooth(method=lm, color='blue', level=0.95) + theme_bw() + xlab("SEPD") + ylab("Local wind turbine density") +  ggtitle("Figure 40 - Linear model fitted to local wind turbine densities and SEPD - Münster") + scale_x_continuous(breaks = seq(1, 7, by = 1))
 ```
 
 ```{r plotCorrelations, echo=FALSE, fig.show='hold', out.width='50%', fig.height=8, message=FALSE, warning=FALSE}
@@ -368,7 +371,7 @@ localDensityDüsseldorf.cor
 localDensityMünster.cor
 ```
 
-### Part III - Intensity as function of covariate
+### Part III - Fitting Poisson point process with covariant
 
 Intensities of a point processes can be modeled using Poisson point processes.
 Additionally a covariate can be introduced if the assumption is made that the point process is driven or at least influenced by the covariate [2]. To evaluate the quality of the resulting model a Poisson point process model is fitted without an additional covariate.
@@ -409,19 +412,19 @@ ppmMünsterPred <- predict(ppmMünsterCov)
 ```
 
 ```{r plotIntensityFunction, echo=FALSE, fig.show='hold', message=FALSE, warning=FALSE, out.width='50%'}
-plot(effectfun(ppmArnsbergCov, "covariantArnsberg", se.fit=TRUE), main="Figure 41 - Intensity function using SEPD as covariate - Arnsberg", las=1, xlab = "SEPD")
+plot(effectfun(ppmArnsbergCov, "covariantArnsberg", se.fit=TRUE), main="Figure 41 - Intensity function using SEPD as covariate - Arnsberg", las=1, xlab = "SEPD", ylab="λ(SEPD)")
 plot(ppmArnsbergPred, box=FALSE, main="Figure 42 - Modeled wind turbine intensity - Arnsberg")
 
-plot(effectfun(ppmDetmoldCov, "covariantDetmold", se.fit=TRUE), main="Figure 43 - Intensity function using SEPD as covariate - Detmold", las=1, xlab = "SEPD")
+plot(effectfun(ppmDetmoldCov, "covariantDetmold", se.fit=TRUE), main="Figure 43 - Intensity function using SEPD as covariate - Detmold", las=1, xlab = "SEPD", ylab="λ(SEPD)")
 plot(ppmDetmoldPred, box=FALSE, main="Figure 44 - Modeled wind turbine intensity - Detmold")
 
-plot(effectfun(ppmKölnCov, "covariantKöln", se.fit=TRUE), main="Figure 45 - Intensity function using SEPD as covariate - Köln", las=1, xlab = "SEPD")
+plot(effectfun(ppmKölnCov, "covariantKöln", se.fit=TRUE), main="Figure 45 - Intensity function using SEPD as covariate - Köln", las=1, xlab = "SEPD", ylab="λ(SEPD)")
 plot(ppmKölnPred, box=FALSE, main="Figure 46 - Modeled wind turbine intensity -  Köln")
 
-plot(effectfun(ppmDüsseldorfCov, "covariantDüsseldorf", se.fit=TRUE), main="Figure 47 - Intensity function using SEPD as covariate - Düsseldorf", las=1, xlab = "SEPD")
+plot(effectfun(ppmDüsseldorfCov, "covariantDüsseldorf", se.fit=TRUE), main="Figure 47 - Intensity function using SEPD as covariate - Düsseldorf", las=1, xlab = "SEPD", ylab="λ(SEPD)")
 plot(ppmDüsseldorfPred, box=FALSE, main="Figure 48 - Modeled wind turbine intensity -  Düsseldorf")
 
-plot(effectfun(ppmMünsterCov, "covariantMünster", se.fit=TRUE), main="Figure 49 - Intensity function using SEPD as covariate - Münster", las=1, xlab = "SEPD")
+plot(effectfun(ppmMünsterCov, "covariantMünster", se.fit=TRUE), main="Figure 49 - Intensity function using SEPD as covariate - Münster", las=1, xlab = "SEPD", ylab="λ(SEPD)")
 plot(ppmMünsterPred, box=FALSE, main="Figure 50 - Modeled wind turbine intensity - Münster")
 ```
 
@@ -435,46 +438,18 @@ anova(ppmMünster, ppmMünsterCov, test="LR")
 
 ## Results
 
-### Part I
+### Part I - Preliminary analysis
+The highest wind turbine counts are found in the precincts of Münster and Detmold with 1067 and 1002 wind turbines respectively. The precincts of Köln and Arnsberg share similar wind turbine counts, 678 for the former and 633 for the latter. The lowest turbine counts is observed in the Düsseldorf precinct. The wind turbine densities per km² follow a similar pattern where the precincts of Detmold and Köln exhibit values around 0.15 wind turbines per km². Here the Köln precinct exhibits a slightly higher wind turbine density per km², with a value of 0.09, as the precincts of Arnsberg and Düsseldorf which share a wind turbine density per km² of 0.07 (see figures 4, 5). A purely visual inspection of the spatial distributions and densities of the wind turbines in the precincts of NRW suggests that the underlying point process might be clustered (see figures 6 to 15). This is confirmed by the $G$-, $F$-, and $J$-functions. The $\hat{G}_{obs}(r)$ functions lie above the lower simulation envelope of the ${G}_{theo}(r)$ functions for most of their range (see figures 16-20). The opposite can be observed with the the $\hat{F}_{obs}(r)$ functions. These functions lie below the respective simulation envelope of ${F}_{theo}(r)$ function for the major part of their range (see figures 21-25). The $\hat{J}_{obs}(r)$ functions exhibit values < 1 for the majority of their range thus Conforming the results from the $G$- and $F$-functions (see figures 26-30). Based on the results of the $G$-, $F$-, and $J$-functions the $H_{0} - I$ is rejected. Based on the properties described in Methods Part I $Ha_{2} - I$ is accepted thus reaching the conclusion that the wind turbine point process in NRW exhibits a clustered pattern.
 
-The highest wind turbine counts are found in the precincst of Münster and Detmold with 1067 and 1002 wind turbines respectively.
-The precincts of Köln and Arnsberg share similar wind turbine counts, 678 for the former and 633 for the latter.
-The lowest turbine counts is obsersved in the Düsseldorf precinct.
-The wind turbine densities per km² follow a similar pattern where the precincts of Detmold and Köln exhibit values around 0.15 wind turbines per km².
-Here the Köln precinct exhibits a slightly higher wind turbine densities per km², 0.09, as the precincts of Arnsberg and Düsseldorf which share a wind turbine densities per km² 0f 0.07 (See figures 4, 5).
-A purely visual inspection of the spatial distributions and densities of the wind turbines in the precincts of NRW suggests that the underlying point process might be clustered (See Figures 6 to 16).
-This is confirmed by the $G$-, $F$-, and $J$-functions.
-The $\hat{G}_{obs}(r)$ functions lie above the lower simulation envelope of the ${G}_{theo}(r)$ functions for most of their range (See figures 16-20).
-The opposite can be observed with the the $\hat{F}_{obs}(r)$ functions.
-These lie below the respective simulation envelope of ${F}_{theo}(r)$ function for the major part of their range (See figures 21-25).
-The $\hat{J}_{obs}(r)$ functions exhibit values \< 1 for the majority of their range thus Conforming the results from the $G$- and $F$-functions (See figures 26-30).
-Based on the results of the $G$-, $F$-, and $J$-functions the $H_{0} - I$ is rejected.
-Based on the properties described in Methods Part I $Ha_{2} - I$ is accepted thus reaching the conclusion that the wind turbine point process in NRW exhibits a clustered pattern.
+### Part II - Local intentity with tessellated covariat
+A purely visual inspection of local intensity analysis implies a positive correlation between the local wind turbine intensity and the SEPD (see figures 31-40). It has to mentioned that the wind turbine densities extreme of the SEPD mostly yielded local wind turbine intensities of 0. The Kendalls-tau correlation coefficients, with the exception of the Detmold precinct, do not yield a significant correlation between the local wind turbine intensity and the SEPD. The computed values for Kendalls-tau are nonetheless positive for all precincts. It is of note that the values for Kendalls-tau are significant and close to 1  when the aforementioned extreme SEPD values are omitted during computation. The $H_{0} - II$ can only confidently be rejected for the precinct of Detmold due to the otherwise unsatisfactory p-values which leads to the conclusion that there is no significant linear correlation between the local wind turbine intensity and the SEPD in the precincts of Arnsberg, Köln, Düsseldorf and Münster. For the precinct of Detmold $Ha_{1} - II$ is accepted.
 
-### Part II
-
-A purely visual inspection of local intensity analysis hints towards a possible positive correlation between the local wind turbine intensity and the SEPD.
-It has to mentioned that the wind turbine densities extreme of the SEPD mostly yielded local wind turbine intensities of 0.
-The Kendalls-tau correlation coefficients, with the exception of the Detmold precinct, do not yield a significant correlation between the local wind turbine intensity and the SEPD.
-The computed values for Kendalls-tau are nonetheless positive for all precincts.
-It is of note that the values for Kendalls-tau are significant and close to 1  when the aforementioned extreme SEPD values are omitted during computation.
-The $H_{0} - II$ can only be rejected for the precinct of Detmold due to the otherwise unsatisfactory p-values which leads to the conclusion that there is no significant linear correlation between the local wind turbine intensity and the SEPD in the precincts of Arnsberg, Köln, Düsseldorf and Münster. For the precinct of Detmold $Ha_{1} - II$ is accepted.
-
-### Part III
-
-Despite of the unsatisfactory levels of significance it was attempted to model the wind turbine density as a function of the SPED.
-The resulting Poisson pint process using the SPED as a covariant was compared to another Poisson point process which was fitted to the wind turbine point pattern only. The comparison was carried out using likelihood ratio tests.
-These yielded very low p-values ($Pr(>Chi)$). This leads to to the rejection of $H_{0} - III$ and the acceptance of $H_a - III$.
-This however is not an indication that the SEPD is the only variable influencing the wind turbine point process. 
+### Part III - Fitting Poisson point process with covariant
+Despite of the unsatisfactory levels of significance it was attempted to model the wind turbine density as a function of the SPED. The resulting Poisson point process using the SPED as a covariant (see figures 41-50) was compared to another Poisson point process which was fitted to the wind turbine point pattern only. The comparison was carried out using likelihood ratio tests. These tests yielded very low p-values ($Pr(>Chi)$). This leads to to the rejection of $H_{0} - III$ and the acceptance of $H_a - III$. This however is not an indication that the SEPD is the only or determining variable influencing the wind turbine point process. 
 
 ## Discussion
 
-The presented analysis could prove that the point process formed by the wind turbines in the precincts of NRW is clustered.
-This seems not surprising given that wind turbines tend to aggregated together in wind parks and are rarely build individually. The analysis of the local wind turbine intensities and their correlation with the underlying SEPD values could disprove the existence of a significant linear correlation between them in all precincts of NRW.
-Further studies could employ different measures and methods to identify other a possible correlations between the two since positive though insignificant correlation coefficients could be seen as an indication that some relation between the two exists. 
-The fitting of Poisson point processes to the wind turbine point pattern and the SEPD as a covariate and their subsequent comparison could prove that the wind turbine point pattern is depended on the SEPD though the degree of this dependence could not be determined although it seems highly unlikely that the SEPD is the only factor influencing the disclosure of areas which are to be used for the power generation by means of wind energy by the planning authorities.
-Future attempts at modelling the underlying Poisson point processes of the wind turbine point pattern should therefore take additional Variables like regulatory constraints like the distance to residential areas, environmental variables like the SPED in other available height levels or the relief into account. It could also be worth while to conduct comparative studies with different processes for modelling the wind turbine point process like Cox processes [3].
-Based on the described methods and results it could be argued that the specific energy power density might be seen as a factor which influenced the decisions which led to he formation of the wind turbine point pattern in the precincts of NRW. Further, more in-depth studies are nonetheless strongly recommended.
+The presented analysis could prove that the point process formed by the wind turbines in the precincts of NRW is clustered. This seems not surprising given that wind turbines tend to aggregated together in wind parks and are rarely build individually. The analysis of the local wind turbine intensities and their correlation with the underlying SEPD values could disprove the existence of a significant linear correlation between them in all precincts of NRW. Further studies could employ different measures and methods to identify other possible correlations between the two since positive though insignificant correlation coefficients could be seen as an indication that some relation between the two exists. The fitting of Poisson point processes to the wind turbine point pattern and the SEPD as a covariate and their subsequent comparison could prove that the wind turbine point pattern is depended on the SEPD though the degree of this dependence could not be determined although it seems highly unlikely that the SEPD is the only factor influencing the disclosure of areas which are to be used for the power generation by means of wind energy by the planning authorities. Future attempts at modelling the underlying Poisson point processes of the wind turbine point pattern should therefore take additional variables like regulatory constraints like the distance to residential areas, environmental variables like the SPED in other available height levels or the relief into account. It could also be worth while to conduct comparative studies with different approaches for modelling the wind turbine point process like Cox processes [3]. Studies which highlight differences between the precincts could also be of interest. Based on the described methods and results it could be argued that the specific energy power density might be seen as a factor which influenced the decisions which led to the formation of the wind turbine point pattern in the precincts of NRW. Further, more in-depth studies, are nonetheless strongly recommended.
 
 ## Sources
 
@@ -484,14 +459,11 @@ Based on the described methods and results it could be argued that the specific 
 
 [3] P. J. Diggle, Statistical Analysis of Spatial and Spatio-Temporal Point Patterns, 3rd edition Boca Raton: Taylor & Francis Group, LLC, 2014
 
-[4] R.
-S. Bivand, E. Pebesma, V. Gómez-Rubio, Applied Spatial Data Analysis with R, 2nd edition New York: Springer Science+Business Media 2013
+[4] R. S. Bivand, E. Pebesma, V. Gómez-Rubio, Applied Spatial Data Analysis with R, 2nd edition New York: Springer Science+Business Media 2013
 
-[5] C.
-Reimann, P. Filzmoser, R. G. Garrett, R. Dutter, Statistical Data Analysis Explained Applied Environmental Statistics with R, 1st edition Chichester: John Wiley & Sons Ltd., 2008
+[5] C. Reimann, P. Filzmoser, R. G. Garrett, R. Dutter, Statistical Data Analysis Explained Applied Environmental Statistics with R, 1st edition Chichester: John Wiley & Sons Ltd., 2008
 
-[6] P.J.
-Diggle, Statistical analysis of spatial point patterns, 2nd edition Dortmund: Arnold, 2003
+[6] P.J. Diggle, Statistical analysis of spatial point patterns, 2nd edition Dortmund: Arnold, 2003
 
 [7] Landesamt für Natur, Umwelt und Verbraucherschutz Nordrhein-Westfalen (LANUV), Potenzialstudie Windenergie NRW LANUV-Fachbericht 124 [Online], Available at: <https://www.lanuv.nrw.de/fileadmin/lanuvpubl/3_fachberichte/Potenzialstudie-Windenergie-NRW.pdf> (Last accessed on: 03. March 2023)
 
